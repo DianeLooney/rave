@@ -24,6 +24,27 @@ var (
 	Ctx *oto.Context
 )
 
+func Add(sounds ...Sound) Sound {
+	maxLength := -1
+	for _, s := range sounds {
+		l := len(s.Waveform)
+		if l > maxLength {
+			maxLength = l
+		}
+	}
+
+	out := Sound{}
+	out.Waveform = make([]float64, maxLength)
+
+	for _, s := range sounds {
+		for i, x := range s.Waveform {
+			out.Waveform[i] += x
+		}
+	}
+
+	return out
+}
+
 type Sound struct {
 	Waveform []float64
 }
@@ -39,6 +60,17 @@ func (s *Sound) ScaleAmplitude(r float64) *Sound {
 		s.Waveform[i] = v * r
 	}
 	return s
+}
+
+func (s *Sound) Play() {
+	p := Ctx.NewPlayer()
+
+	if _, err := p.Write(s.ToByteStream()); err != nil {
+		log.Fatalf("Unable to write to buffer:\n%v", err)
+	}
+	if err := p.Close(); err != nil {
+		log.Fatalf("Unable to close player:\n%v", err)
+	}
 }
 
 func (s *Sound) ToByteStream() (out []byte) {
@@ -63,4 +95,22 @@ func (s *Sound) ToByteStream() (out []byte) {
 		}
 	}
 	return
+}
+
+func (s *Sound) FadeIn(pct float64) *Sound {
+	count := pct * float64(len(s.Waveform))
+	for i := 0; i < int(count); i++ {
+		mult := float64(i) / count
+		s.Waveform[i] = mult * s.Waveform[i]
+	}
+	return s
+}
+
+func (s *Sound) TaperOff(pct float64) *Sound {
+	count := pct * float64(len(s.Waveform))
+	for i := 1; i < int(count); i++ {
+		mult := float64(i) / count
+		s.Waveform[len(s.Waveform)-i] = mult * s.Waveform[len(s.Waveform)-i]
+	}
+	return s
 }
