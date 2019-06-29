@@ -22,7 +22,20 @@ func (n Note) Play() {
 	var s Sound
 	switch n.Pattern {
 	case "sine":
-		s = SineWave{n.Pitch, n.Duration}.Generate()
+		s = SineWave{
+			Frequency: n.Pitch,
+			Length:    n.Duration,
+		}.Generate()
+	case "triangle":
+		s = TriangleWave{
+			Frequency: n.Pitch,
+			Length:    n.Duration,
+		}.Generate()
+	case "square":
+		s = SquareWave{
+			Frequency: n.Pitch,
+			Length:    n.Duration,
+		}.Generate()
 	default:
 		fmt.Fprintf(os.Stderr, "Unsupported wave pattern '%v'\n", n.Pattern)
 		return
@@ -30,7 +43,7 @@ func (n Note) Play() {
 
 	s.FadeIn(0.05)
 	s.ScaleAmplitude(n.Intensity)
-	s.TaperOff(0.1)
+	s.TaperOff(0.05)
 
 	if _, err := p.Write(s.ToByteStream()); err != nil {
 		log.Fatalf("Unable to write to buffer:\n%v", err)
