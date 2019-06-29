@@ -7,6 +7,7 @@ import (
 	"time"
 
 	. "github.com/dianelooney/rave/out"
+	"github.com/dianelooney/rave/waves"
 )
 
 type Note struct {
@@ -22,20 +23,23 @@ func (n Note) Play() {
 	var s Sound
 	switch n.Pattern {
 	case "sine":
-		s = SineWave{
-			Frequency: n.Pitch,
-			Length:    n.Duration,
-		}.Generate()
+		s = Generate(
+			waves.Sin,
+			n.Pitch,
+			n.Duration,
+		)
 	case "triangle":
-		s = TriangleWave{
-			Frequency: n.Pitch,
-			Length:    n.Duration,
-		}.Generate()
+		s = Generate(
+			waves.Triangle,
+			n.Pitch,
+			n.Duration,
+		)
 	case "square":
-		s = SquareWave{
-			Frequency: n.Pitch,
-			Length:    n.Duration,
-		}.Generate()
+		s = Generate(
+			waves.Square,
+			n.Pitch,
+			n.Duration,
+		)
 	default:
 		fmt.Fprintf(os.Stderr, "Unsupported wave pattern '%v'\n", n.Pattern)
 		return
