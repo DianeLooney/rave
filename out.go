@@ -14,22 +14,40 @@ func main() {
 	if err != nil {
 		log.Fatalf("Unable to initialize oto:\n%v", err)
 	}
+	Note{
+		Pitch:     C4,
+		Duration:  time.Second * 1,
+		Pattern:   "experiment",
+		Intensity: 0.2,
+	}.Play()
+	Note{
+		Pitch:     E4,
+		Duration:  time.Second * 1,
+		Pattern:   "experiment",
+		Intensity: 0.2,
+	}.Play()
+	Note{
+		Pitch:     G4,
+		Duration:  time.Second * 1,
+		Pattern:   "experiment",
+		Intensity: 0.2,
+	}.Play()
 	go Note{
 		Pitch:     C4,
 		Duration:  time.Second * 2,
-		Pattern:   "sine",
+		Pattern:   "experiment",
 		Intensity: 0.2,
 	}.Play()
 	go Note{
 		Pitch:     E4,
 		Duration:  time.Second * 2,
-		Pattern:   "square",
+		Pattern:   "experiment",
 		Intensity: 0.2,
 	}.Play()
 	go Note{
 		Pitch:     G4,
 		Duration:  time.Second * 2,
-		Pattern:   "triangle",
+		Pattern:   "experiment",
 		Intensity: 0.2,
 	}.Play()
 	time.Sleep(2 * time.Second)

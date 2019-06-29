@@ -40,6 +40,12 @@ func (n Note) Play() {
 			n.Pitch,
 			n.Duration,
 		)
+	case "experiment":
+		s = Generate(
+			waves.Experiment,
+			n.Pitch,
+			n.Duration,
+		)
 	default:
 		fmt.Fprintf(os.Stderr, "Unsupported wave pattern '%v'\n", n.Pattern)
 		return

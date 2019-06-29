@@ -1,0 +1,8 @@
+Mult(Sin, Triangle)
+Mult(Sin.Shift(0.25), Triangle)
+
+Mult(Sin.Expand(2), Sin)
+Mult(Triangle.Expand(0.5), Sin)
+
+Bad piano:
+Mult(Square, Sin.Expand(2))
