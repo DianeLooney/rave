@@ -18,14 +18,26 @@ func (w WaveFunc) Expand(r float64) WaveFunc {
 	}
 }
 
-var Triangle WaveFunc = func(offset float64) float64 {
-	div := int(offset) % 2
-	rem := offset - float64(int(offset))
-	if div == 0 {
-		return -1 + 2*rem
+func (w WaveFunc) Amplitude(r float64) WaveFunc {
+	return func(offset float64) float64 {
+		return w(offset) * r
 	}
+}
 
-	return 1 - 2*rem
+var Triangle = Saw(0.25)
+
+func Saw(peak float64) WaveFunc {
+	return func(offset float64) float64 {
+		iPart := math.Floor(offset)
+		remainder := offset - iPart
+		if remainder < peak {
+			return (1.0 / peak) * remainder
+		}
+		if remainder > 1-peak {
+			return -1 + (remainder-(1-peak))*(1/peak)
+		}
+		return 1 + (-2/(1-2*peak))*(remainder-peak)
+	}
 }
 
 var Sin WaveFunc = func(offset float64) float64 {
@@ -42,4 +54,4 @@ var Square WaveFunc = func(offset float64) float64 {
 
 //var Experiment = Sin.Expand(1)
 
-var Experiment = Mult(Square, Sin.Expand(2))
+var Experiment = Triangle
