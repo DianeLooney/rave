@@ -1,4 +1,4 @@
-package out
+package common
 
 import (
 	"flag"
@@ -25,25 +25,8 @@ var (
 	Ctx *oto.Context
 )
 
-func Add(sounds ...Sound) Sound {
-	maxLength := -1
-	for _, s := range sounds {
-		l := len(s.Waveform)
-		if l > maxLength {
-			maxLength = l
-		}
-	}
-
-	out := Sound{}
-	out.Waveform = make([]float64, maxLength)
-
-	for _, s := range sounds {
-		for i, x := range s.Waveform {
-			out.Waveform[i] += x
-		}
-	}
-
-	return out
+type Player interface {
+	Play()
 }
 
 type Sound struct {
@@ -118,4 +101,25 @@ func (s *Sound) TaperOff(pct float64) *Sound {
 		s.Waveform[len(s.Waveform)-i] = mult * s.Waveform[len(s.Waveform)-i]
 	}
 	return s
+}
+
+func Add(sounds ...Sound) Sound {
+	maxLength := -1
+	for _, s := range sounds {
+		l := len(s.Waveform)
+		if l > maxLength {
+			maxLength = l
+		}
+	}
+
+	out := Sound{}
+	out.Waveform = make([]float64, maxLength)
+
+	for _, s := range sounds {
+		for i, x := range s.Waveform {
+			out.Waveform[i] += x
+		}
+	}
+
+	return out
 }

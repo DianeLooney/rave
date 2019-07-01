@@ -3,6 +3,7 @@ package out
 import (
 	"time"
 
+	. "github.com/dianelooney/rave/common"
 	"github.com/dianelooney/rave/waves"
 )
 

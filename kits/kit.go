@@ -9,18 +9,18 @@ import (
 	"os"
 	"sync"
 
-	"github.com/dianelooney/rave/out"
+	. "github.com/dianelooney/rave/common"
 	"github.com/youpy/go-wav"
 )
 
 type Kit struct {
-	Samples map[string]out.Sound
+	Samples map[string]Sound
 }
 
 type Manifest map[string][]string
 
 func (m Manifest) Load() (k Kit) {
-	k.Samples = make(map[string]out.Sound)
+	k.Samples = make(map[string]Sound)
 	wg := sync.WaitGroup{}
 
 	mtx := sync.Mutex{}
@@ -35,7 +35,7 @@ func (m Manifest) Load() (k Kit) {
 
 				defer file.Close()
 
-				snd := out.Sound{
+				snd := Sound{
 					Waveform: make([]float64, 0),
 				}
 
