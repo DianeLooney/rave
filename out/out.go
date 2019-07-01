@@ -2,6 +2,7 @@ package out
 
 import (
 	"flag"
+	"fmt"
 	"log"
 
 	"github.com/hajimehoshi/oto"
@@ -47,6 +48,10 @@ func Add(sounds ...Sound) Sound {
 
 type Sound struct {
 	Waveform []float64
+}
+
+func (s Sound) String() string {
+	return fmt.Sprintf("<Sound: %v samples>", len(s.Waveform))
 }
 
 func (s *Sound) Clone() (out Sound) {
