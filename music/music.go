@@ -52,5 +52,5 @@ func (m Measure) PlayAt(t time.Time) {
 func waitForBeat(t time.Time, b BPM, count float64) {
 	seconds := b.SecondsPerBeat() * count
 	elapsed := time.Duration(float64(time.Second) * seconds)
-	time.Sleep(time.Until(t.Add(elapsed)))
+	<-time.NewTimer(elapsed).C
 }
