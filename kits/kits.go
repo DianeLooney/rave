@@ -17,6 +17,14 @@ type Kit struct {
 	Samples map[string]Sound
 }
 
+func (k Kit) Sample(s string) Sound {
+	snd, ok := k.Samples[s]
+	if !ok {
+		fmt.Printf("Sound '%s' missing from kit\n", s)
+	}
+	return snd
+}
+
 type Manifest map[string][]string
 
 func (m Manifest) Load() (k Kit) {
@@ -30,7 +38,12 @@ func (m Manifest) Load() (k Kit) {
 			go func(i int, key, path string) {
 				defer wg.Done()
 
-				file, _ := os.Open(path)
+				file, err := os.Open(path)
+				if err != nil {
+					mtx.Lock()
+					fmt.Printf("Unable to open sound file '%v': %v\n", path, err)
+					mtx.Unlock()
+				}
 				reader := wav.NewReader(file)
 
 				defer file.Close()
