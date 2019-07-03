@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	. "github.com/dianelooney/rave/common"
 	. "github.com/dianelooney/rave/out"
 	"github.com/dianelooney/rave/waves"
 )

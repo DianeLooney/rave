@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"time"
+
+	"github.com/dianelooney/rave/notes"
 
 	"github.com/dianelooney/rave/interpreter"
 	"github.com/dianelooney/rave/music"
@@ -64,13 +67,22 @@ func main() {
 					Beats:         beats,
 				}
 			}
-			for {
-				for _, m := range measures {
-					m.Play()
+			/*
+				for {
+					for _, m := range measures {
+						m.Play()
+					}
 				}
-			}
+			*/
 		}(inst)
 	}
 
-	<-make(chan bool)
+	note := notes.Note{
+		Pattern:   "experiment",
+		Pitch:     440,
+		Duration:  2 * time.Second,
+		Intensity: 0.1,
+	}
+	note.Play()
+	//<-make(chan bool)
 }
