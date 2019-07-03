@@ -24,6 +24,18 @@ func (w WaveFunc) Amplitude(r float64) WaveFunc {
 	}
 }
 
+func (w WaveFunc) Add(w2 WaveFunc) WaveFunc {
+	return func(offset float64) float64 {
+		return w(offset) + w2(offset)
+	}
+}
+
+func (w WaveFunc) Mult(w2 WaveFunc) WaveFunc {
+	return func(offset float64) float64 {
+		return (w(offset) * w2(offset))
+	}
+}
+
 var Triangle = Saw(0.25)
 
 func Saw(peak float64) WaveFunc {
