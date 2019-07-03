@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 
+	"github.com/dianelooney/rave/interpreter"
 	"github.com/dianelooney/rave/music"
 
 	"github.com/dianelooney/rave/kits"
@@ -26,53 +28,49 @@ func main() {
 		log.Fatalf("Failed to parse manifest: %v\n", err)
 	}
 	kit := m.Load()
+
 	bass := kit.Sample("kicks_1")
 	bass.ScaleAmplitude(0.1)
 	snare := kit.Sample("snares_1")
 	snare.ScaleAmplitude(0.1)
-	mes := music.Measure{
-		TimeSignature: music.TimeSignature{9, 8},
-		Tempo:         240,
-		Beats: []music.Beat{
-			{
-				Offset: 0,
-				Player: &bass,
-			},
-			{
-				Offset: 1,
-				Player: &snare,
-			},
-			{
-				Offset: 2,
-				Player: &bass,
-			},
-			{
-				Offset: 3,
-				Player: &snare,
-			},
-			{
-				Offset: 4,
-				Player: &bass,
-			},
-			{
-				Offset: 5,
-				Player: &snare,
-			},
-			{
-				Offset: 6,
-				Player: &bass,
-			},
-			{
-				Offset: 7,
-				Player: &snare,
-			},
-			{
-				Offset: 8,
-				Player: &snare,
-			},
-		},
+
+	var set interpreter.Set
+	d, err := ioutil.ReadFile("interpreter/sample.yml")
+	if err != nil {
+		log.Fatalf("Unable to read file: %v\n", err)
 	}
-	for {
-		mes.Play()
+	err = yaml.Unmarshal(d, &set)
+	if err != nil {
+		log.Fatalf("Unable to unmarshal yaml: %v\n", err)
 	}
+
+	fmt.Printf("%+v\n", set)
+
+	for _, inst := range set.Kits {
+		go func(inst interpreter.Inst) {
+			x := kit.Sample(inst.N)
+			measures := make([]music.Measure, len(inst.M))
+			for i, m := range inst.M {
+				beats := make([]music.Beat, len(m))
+				for j, y := range m {
+					beats[j] = music.Beat{
+						Offset: y - 1,
+						Player: &x,
+					}
+				}
+				measures[i] = music.Measure{
+					TimeSignature: music.TimeSignature{set.Tstop, set.Tsbot},
+					Tempo:         set.BPM(),
+					Beats:         beats,
+				}
+			}
+			for {
+				for _, m := range measures {
+					m.Play()
+				}
+			}
+		}(inst)
+	}
+
+	<-make(chan bool)
 }
