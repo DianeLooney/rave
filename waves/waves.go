@@ -75,7 +75,7 @@ var Sin WaveFunc = func(offset float64) float64 {
 }
 
 var Square WaveFunc = func(offset float64) float64 {
-	if int(offset)%2 == 0 {
+	if int(2*offset)%2 == 0 {
 		return 1
 	}
 
@@ -90,11 +90,14 @@ var Nil WaveFunc = func(offset float64) float64 { return 0 }
 var Experiment WaveFunc
 
 func init() {
+	p1 := Triangle.Mult(Square).Expand(0.5).Amplitude(0.01)
+	p2 := Sin.Shrink(2).Amplitude(0.1)
+	p3 := Square.Shrink(12).Amplitude(0.07)
+	Experiment = p1.Add(p2).Add(p3)
 	/*
-		p1 := Triangle.Mult(Square).Expand(0.5)
-		p2 := Sin.Shrink(2)
-		p3 := Square.Shrink(12).Amplitude(0.05)
-		Experiment = p1.Add(p2).Add(p3)
+		p1 := Sin.Shrink(3)
+		p2 := Sin.Shrink(7)
+		p3 := p1.Add(p2).Amplitude(0.3).ShiftY(0.6)
+		Experiment = Sin.Mult(p3).Amplitude(0.6)
 	*/
-	Experiment = Sin.Mult(Sin.Amplitude(0.1).ShiftY(0.6).Shrink(9))
 }
