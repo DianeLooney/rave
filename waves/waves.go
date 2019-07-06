@@ -1,7 +1,10 @@
 package waves
 
 import (
+	"fmt"
 	"math"
+
+	"github.com/dianelooney/rave/pitches"
 )
 
 type WaveFunc func(offset float64) float64
@@ -54,6 +57,46 @@ func (w WaveFunc) Mult(w2 WaveFunc) WaveFunc {
 	}
 }
 
+func Bend(t0, t1, r float64) WaveFunc {
+	var a, b, c float64
+
+	/*
+		f(x) = ax2 + bx + c
+		f'(x) = 2ax + b
+		f'(t0) = 1  -> 2*a*t0 + b = 1 (1)
+		f'(t1) = r  -> 2*a*t1 + b = r (2)
+		f(t0) = t0  -> a*a*t0 + b*t0 + c = t0 (3)
+
+		(1) - (2) -> 2*a*t0 + b - (2*a*t1 + b) = 1 - r
+		2*a*t0 + b - (2*a*t1 + b) = 1 - r
+		2*a*(t0 - t1) = 1-r
+	*/
+	a = (1 - r) / (2 * (t0 - t1))
+
+	// 2*a*t0 + b = 1
+	b = 1 - 2*a*t0
+
+	// a*a*t0 + b*t0 + c = t0
+	c = t0 - b*t0 - a*a*t0
+
+	fmt.Printf("%v x^x + %v x + %v\n", a, b, c)
+
+	// for x > t1, g(x) = rx + d
+	// g(t1) = f(t1)
+	// r*t1 + d = a*a*t1 + b*t1 + c
+	d := a*t1*t1 + b*t1 + c - r*t1
+
+	return func(x float64) float64 {
+		if x < t0 {
+			return x
+		}
+		if x > t1 {
+			return d + r*x
+		}
+		return a*x*x + b*x + c
+	}
+}
+
 var Triangle = Saw(0.25)
 
 func Saw(peak float64) WaveFunc {
@@ -86,18 +129,22 @@ var Nil WaveFunc = func(offset float64) float64 { return 0 }
 
 //var Experiment = Sin.Expand(1)
 //var Experiment = Sin.Mult(Sin.Amplitude(0.1).ShiftY(0.6).Shrink(9))
-
+//var Experiment = Sin.Compose(Bend(0, 440, 1/(pitches.HalfStep*pitches.HalfStep)))
 var Experiment WaveFunc
 
 func init() {
-	p1 := Triangle.Mult(Square).Expand(0.5).Amplitude(0.01)
-	p2 := Sin.Shrink(2).Amplitude(0.1)
-	p3 := Square.Shrink(12).Amplitude(0.07)
-	Experiment = p1.Add(p2).Add(p3)
+	/*
+		p1 := Triangle.Mult(Square).Expand(0.5).Amplitude(0.01)
+		p2 := Sin.Shrink(2).Amplitude(0.1)
+		p3 := Square.Shrink(12).Amplitude(0.07)
+		Experiment = p1.Add(p2).Add(p3)
+	*/
 	/*
 		p1 := Sin.Shrink(3)
-		p2 := Sin.Shrink(7)
-		p3 := p1.Add(p2).Amplitude(0.3).ShiftY(0.6)
-		Experiment = Sin.Mult(p3).Amplitude(0.6)
+		p2 := Sin.Shrink(5)
+		p3 := Sin.Shrink(7)
+		p4 := p1.Add(p2).Add(p3).Amplitude(0.3).ShiftY(0.6)
+		Experiment = Sin.Mult(p4).Amplitude(0.6)
 	*/
+	Experiment = Sin.Compose(Bend(0, 440, 1/(pitches.HalfStep*pitches.HalfStep)))
 }
