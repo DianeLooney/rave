@@ -3,13 +3,20 @@ package main
 import (
 	"time"
 
+	"github.com/dianelooney/rave/music"
 	"github.com/dianelooney/rave/notes"
 )
 
-// . "github.com/dianelooney/rave/notes"
-// . "github.com/dianelooney/rave/pitches"
-
 func main() {
+	set := NewContext(Background)
+	set.Set(Tempo, 120)
+
+	music.Measure{
+		TimeSignature: TimeSignature{4, 4},
+		Tempo:         120,
+		Beats:         []Beat{},
+	}
+
 	note := notes.Note{
 		Pattern:   "experiment",
 		Pitch:     440,

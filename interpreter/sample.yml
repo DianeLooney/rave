@@ -1,9 +1,0 @@
-tstop: 4
-tsbot: 4
-tempo: 180
-key: Cmaj
-beated_note: 4
-kits:
-- n: snares_1
-  m:
-  - [1, 2, 3, 4]
