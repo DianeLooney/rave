@@ -75,6 +75,7 @@ func (d *Doc) Kit() *Kit {
 		Name:   "",
 		Volume: 0.1,
 		Sync:   "global",
+		done:   make(chan bool),
 	}
 	d.Kits = append(d.Kits, i)
 	return i
@@ -86,6 +87,7 @@ type Kit struct {
 	Sync   string
 	Volume float64
 	loop   *Loop
+	done   chan bool
 }
 
 func (k *Kit) Loop() *Loop {
@@ -119,7 +121,7 @@ type Player struct {
 	globalBeat     ferry.Ferry
 	globalBeatOnce sync.Once
 	doc            *Doc
-	kits           map[string]chan bool
+	kits           map[string]*Kit
 	beats          map[string]*ferry.Ferry
 	kit            kits.Kit
 }
@@ -134,7 +136,7 @@ func (d *Doc) hasKit(name string) bool {
 }
 
 func (p *Player) Init() {
-	p.kits = make(map[string]chan bool)
+	p.kits = make(map[string]*Kit)
 	p.kit = kits.LoadManifest("kits/manifest.yml").Load()
 	p.beats = make(map[string]*ferry.Ferry)
 }
@@ -148,72 +150,74 @@ func (p *Player) Load(doc *Doc) {
 			if doc.hasKit(k.Name) {
 				continue
 			}
-			ch := p.kits[k.Name]
-			go func() {
-				<-ch
-				p.mtx.Lock()
-				defer p.mtx.Unlock()
-				delete(p.kits, k.Name)
-			}()
+			kit := p.kits[k.Name]
+			go p.despawnKit(kit)
 		}
 	}
 
 	p.doc = doc
 	for _, k := range p.doc.Kits {
-		p.spawnKit(k)
-	}
-	go p.globalBeatOnce.Do(func() {
-		for {
-			p.globalBeat.Done()
-			waitForBeat(p.doc.Tempo, p.doc.TimeBot)
+		_, ok := p.beats[k.Name]
+		if !ok {
+			p.beats[k.Name] = &ferry.Ferry{}
 		}
-	})
+	}
+	for _, k := range p.doc.Kits {
+		go p.spawnKit(k)
+	}
+	go p.globalBeatOnce.Do(p.spawnGlobalBeat)
 }
+func (p *Player) spawnGlobalBeat() {
+	next := time.Now()
+	for {
+		p.globalBeat.Done()
 
+		seconds := (60 / float64(p.doc.Tempo)) * p.doc.TimeTop
+		elapsed := time.Duration(float64(time.Second) * seconds)
+		next = next.Add(elapsed)
+		<-time.After(time.Until(next))
+	}
+}
+func (p *Player) despawnKit(k *Kit) {
+	<-k.done
+	p.mtx.Lock()
+	defer p.mtx.Unlock()
+	delete(p.kits, k.Name)
+}
 func (p *Player) spawnKit(k *Kit) {
-	ch, ok := p.kits[k.Name]
+	loop := k.loop
+	sample := p.kit.Sample(k.Sample)
+	sample = sample.ScaleAmplitude(k.Volume)
+	sync, ok := p.beats[k.Sync]
 	if !ok {
-		ch = make(chan bool)
-		p.kits[k.Name] = ch
-		go func() {
-			b, ok := p.beats[k.Sync]
-			if ok {
-				b.Wait()
-			} else {
-				p.globalBeat.Wait()
-			}
-			ch <- true
-		}()
+		sync = &p.globalBeat
 	}
-	beat, ok := p.beats[k.Name]
-	if !ok {
-		beat = &ferry.Ferry{}
-		p.beats[k.Name] = beat
-	}
-
+	beat := p.beats[k.Name]
 	go func() {
-		<-ch
-		loop := k.loop
-		tempo := p.doc.Tempo
-		timeTop := p.doc.TimeTop
-		sample := p.kit.Sample(k.Sample)
-		sample = sample.ScaleAmplitude(k.Volume)
+		if old := p.kits[k.Name]; old != nil {
+			<-old.done
+		}
+		p.kits[k.Name] = k
 		for {
 			select {
-			case ch <- true:
+			case k.done <- true:
 				return
 			default:
-				beat.Done()
 			}
 
-			for _, m := range loop.Measures {
-				for _, p := range m.Pulses {
-					go func(p float64) {
-						waitForBeat(tempo, p)
-						sample.Play()
-					}(p)
+			for i, m := range loop.Measures {
+				if i == 0 {
+					sync.Wait()
+					beat.Done()
+				} else {
+					p.globalBeat.Wait()
 				}
-				waitForBeat(tempo, timeTop)
+				for _, pulse := range m.Pulses {
+					go func(pulse float64) {
+						waitForBeat(p.doc.Tempo, pulse)
+						sample.Play()
+					}(pulse)
+				}
 			}
 		}
 	}()
