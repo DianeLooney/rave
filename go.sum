@@ -10,6 +10,8 @@ github.com/dianelooney/directive v0.0.0-20190707012653-c675ee848de5 h1:mC+Y1i0Wr
 github.com/dianelooney/directive v0.0.0-20190707012653-c675ee848de5/go.mod h1:L5DJmbnDYn2a02Zs+IpVG28z/NzWi1SWxQoCFt31czE=
 github.com/dianelooney/directive v0.0.0-20190708013640-cdbafa41b399 h1:CbWS/toOgeHUEx75Gs2GauYAvjkLkmhwRQgmBLUoyZE=
 github.com/dianelooney/directive v0.0.0-20190708013640-cdbafa41b399/go.mod h1:L5DJmbnDYn2a02Zs+IpVG28z/NzWi1SWxQoCFt31czE=
+github.com/dianelooney/ferry v0.0.0-20190708165058-49a9fceeeea4 h1:zDqjP46BWY3aH+7fgn7ABYLaauoolUbOMckTzJRrU5I=
+github.com/dianelooney/ferry v0.0.0-20190708165058-49a9fceeeea4/go.mod h1:R093McRgAFPltvCevePzBL5UW1pRN5/ufJNtciZr2O4=
 github.com/fogleman/gg v1.2.1-0.20190220221249-0403632d5b90/go.mod h1:R/bRT+9gY/C5z7JzPU0zXsXHKM4/ayA+zqcVNZzPa1k=
 github.com/fogleman/gg v1.3.0 h1:/7zJX8F6AaYQc57WQCyN9cAIz+4bCJGO9B+dyW29am8=
 github.com/fogleman/gg v1.3.0/go.mod h1:R/bRT+9gY/C5z7JzPU0zXsXHKM4/ayA+zqcVNZzPa1k=

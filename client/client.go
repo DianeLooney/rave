@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/dianelooney/directive"
+	"github.com/dianelooney/ferry"
 	"github.com/dianelooney/rave/kits"
 	"github.com/fsnotify/fsnotify"
 )
@@ -115,11 +116,11 @@ func (m *Measure) Pulse(t float64) {
 
 type Player struct {
 	mtx            sync.Mutex
-	globalBeat     chan bool
+	globalBeat     ferry.Ferry
 	globalBeatOnce sync.Once
 	doc            *Doc
 	kits           map[string]chan bool
-	beats          map[string]chan bool
+	beats          map[string]*ferry.Ferry
 	kit            kits.Kit
 }
 
@@ -132,22 +133,10 @@ func (d *Doc) hasKit(name string) bool {
 	return false
 }
 
-func awakeAll(ch chan bool) {
-	for {
-		select {
-		case ch <- true:
-			continue
-		default:
-			return
-		}
-	}
-}
-
 func (p *Player) Init() {
-	p.globalBeat = make(chan bool)
 	p.kits = make(map[string]chan bool)
 	p.kit = kits.LoadManifest("kits/manifest.yml").Load()
-	p.beats = make(map[string]chan bool)
+	p.beats = make(map[string]*ferry.Ferry)
 }
 
 func (p *Player) Load(doc *Doc) {
@@ -175,7 +164,7 @@ func (p *Player) Load(doc *Doc) {
 	}
 	go p.globalBeatOnce.Do(func() {
 		for {
-			awakeAll(p.globalBeat)
+			p.globalBeat.Done()
 			waitForBeat(p.doc.Tempo, p.doc.TimeBot)
 		}
 	})
@@ -189,16 +178,16 @@ func (p *Player) spawnKit(k *Kit) {
 		go func() {
 			b, ok := p.beats[k.Sync]
 			if ok {
-				<-b
+				b.Wait()
 			} else {
-				<-p.globalBeat
+				p.globalBeat.Wait()
 			}
 			ch <- true
 		}()
 	}
 	beat, ok := p.beats[k.Name]
 	if !ok {
-		beat = make(chan bool)
+		beat = &ferry.Ferry{}
 		p.beats[k.Name] = beat
 	}
 
@@ -214,7 +203,7 @@ func (p *Player) spawnKit(k *Kit) {
 			case ch <- true:
 				return
 			default:
-				awakeAll(beat)
+				beat.Done()
 			}
 
 			for _, m := range loop.Measures {
