@@ -1,0 +1,23 @@
+TimeTop 4
+TimeBot 4
+Tempo 120
+
+Kit {
+    Name "apple"
+    Sample "808s_1"
+    Loop {
+        Measure {
+            [Pulse 1 2 3 4]
+        }
+    }
+}
+
+Kit {
+    Name "banana"
+    Sample "claps_1"
+    Loop {
+        Measure {
+            [Pulse 2.33 2.66 4.33 4.66]
+        }
+    }
+}

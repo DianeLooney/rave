@@ -3,6 +3,7 @@ module github.com/dianelooney/rave
 require (
 	github.com/ajstarks/svgo v0.0.0-20181006003313-6ce6a3bcf6cd // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/dianelooney/directive v0.0.0-20190708013640-cdbafa41b399
 	github.com/fogleman/gg v1.3.0 // indirect
 	github.com/hajimehoshi/oto v0.3.4
 	github.com/jung-kurt/gofpdf v1.5.1 // indirect
@@ -16,4 +17,5 @@ require (
 	gonum.org/v1/gonum v0.0.0-20190628223043-536a303fd62f // indirect
 	gonum.org/v1/netlib v0.0.0-20190331212654-76723241ea4e // indirect
 	gonum.org/v1/plot v0.0.0-20190615073203-9aa86143727f
+	gopkg.in/yaml.v2 v2.2.2
 )

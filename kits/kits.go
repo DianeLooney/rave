@@ -1,7 +1,6 @@
 package kits
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -11,6 +10,7 @@ import (
 
 	. "github.com/dianelooney/rave/common"
 	"github.com/youpy/go-wav"
+	"gopkg.in/yaml.v2"
 )
 
 type Kit struct {
@@ -82,7 +82,7 @@ func LoadManifest(path string) (m Manifest) {
 	if err != nil {
 		log.Fatalf("Unable to read manifest '%v': %v", path, err)
 	}
-	err = json.Unmarshal(data, &m)
+	err = yaml.Unmarshal(data, &m)
 	if err != nil {
 		log.Fatalf("Unable to parse manifest: %v", err)
 	}

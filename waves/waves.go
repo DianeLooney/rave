@@ -3,8 +3,6 @@ package waves
 import (
 	"fmt"
 	"math"
-
-	"github.com/dianelooney/rave/pitches"
 )
 
 type WaveFunc func(offset float64) float64
@@ -146,5 +144,5 @@ func init() {
 		p4 := p1.Add(p2).Add(p3).Amplitude(0.3).ShiftY(0.6)
 		Experiment = Sin.Mult(p4).Amplitude(0.6)
 	*/
-	Experiment = Sin.Compose(Bend(0, 440, 1/(pitches.HalfStep*pitches.HalfStep)))
+	Experiment = Sin.Compose(Bend(0, 440, 0.5))
 }
