@@ -43,11 +43,16 @@ func (s *Sound) Clone() (out Sound) {
 	return
 }
 
-func (s *Sound) ScaleAmplitude(r float64) *Sound {
-	for i, v := range s.Waveform {
-		s.Waveform[i] = v * r
+func (s *Sound) ScaleAmplitude(r float64) (out Sound) {
+	out = Sound{
+		Waveform: make([]float64, len(s.Waveform)),
 	}
-	return s
+
+	for i, v := range s.Waveform {
+		out.Waveform[i] = v * r
+	}
+
+	return
 }
 
 func (s *Sound) Play() {

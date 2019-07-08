@@ -4,20 +4,19 @@ Tempo 120
 
 Kit {
     Name "apple"
-    Sample "808s_1"
+    Sample "808s_2"
+    Volume 0.7
     Loop {
-        Measure {
-            [Pulse 1 2 3 4]
-        }
+        [Measure { [Pulse 1] } { [Pulse 1 2 3 4] }]
     }
 }
 
 Kit {
     Name "banana"
     Sample "claps_1"
+    Volume 0.1
+    Sync "apple"
     Loop {
-        Measure {
-            [Pulse 2.33 2.66 4.33 4.66]
-        }
+        [Measure { [Pulse 1] } { [Pulse 1 2 3 4] }]
     }
 }

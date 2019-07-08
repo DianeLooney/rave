@@ -5,6 +5,8 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dianelooney/directive v0.0.0-20190708013640-cdbafa41b399
 	github.com/fogleman/gg v1.3.0 // indirect
+	github.com/fsnotify/fsnotify v1.4.7
+	github.com/go-fsnotify/fsnotify v0.0.0-20180321022601-755488143dae // indirect
 	github.com/hajimehoshi/oto v0.3.4
 	github.com/jung-kurt/gofpdf v1.5.1 // indirect
 	github.com/stretchr/testify v1.3.0 // indirect
