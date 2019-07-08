@@ -12,7 +12,6 @@ import (
 	"github.com/fsnotify/fsnotify"
 )
 
-const SockAddr = "/tmp/rave.sock"
 const src = "client/src.rave"
 
 func main() {
