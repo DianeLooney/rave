@@ -1,12 +1,10 @@
 package rave
 
 import (
-	"log"
 	"sync"
 	"time"
 
 	"github.com/dianelooney/ferry"
-	"github.com/dianelooney/rave/common"
 )
 
 type Context struct {
@@ -46,12 +44,7 @@ func (p *Context) Load(doc *Doc) {
 		}
 	}
 	for _, i := range p.doc.Insts {
-		switch v := i.(type) {
-		case *Kit:
-			go p.spawnKit(v)
-		default:
-			log.Fatalf("Unsupported type in Context.Load: '%T'\n", i)
-		}
+		go p.spawnInst(i)
 	}
 	go p.globalBeatOnce.Do(p.spawnGlobalBeat)
 }
@@ -76,59 +69,23 @@ func (p *Context) despawnInst(i Inst) {
 	defer p.mtx.Unlock()
 	delete(p.insts, i.ID())
 }
-
-func (p *Context) spawnKit(k *Kit) {
-	loop := k.loop
-	samples := make([]common.Sound, len(k.Samples))
-	for i, s := range k.Samples {
-		x := kit.Sample(s)
-		samples[i] = x.ScaleAmplitude(k.Volume)
-	}
-	sync, ok := p.beats[k.Sync]
-	if !ok {
-		sync = &p.globalBeat
-	}
-	beat := p.beats[k.Name]
+func (p *Context) spawnInst(i Inst) {
 	go func() {
-		if old := p.insts[k.ID()]; old != nil {
+		if old := p.insts[i.ID()]; old != nil {
 			<-old.Done()
 		}
+
 		p.mtx.Lock()
-		p.insts[k.ID()] = k
+		p.insts[i.ID()] = i
 		p.mtx.Unlock()
+
 		for {
 			select {
-			case k.done <- true:
+			case i.Done() <- true:
 				return
 			default:
 			}
-
-			for i, m := range loop.Measures {
-				if i == 0 {
-					sync.Wait()
-					beat.Done()
-				} else {
-					p.globalBeat.Wait()
-				}
-				for i, pulse := range m.Pulses {
-					go func(m *Measure, i int, pulse float64) {
-						sampleI := 0
-						if i < len(m.Samples) {
-							sampleI = m.Samples[i]
-						}
-						x := samples[0]
-						if sampleI < len(samples) {
-							x = samples[sampleI]
-						}
-
-						if i < len(m.Weights) {
-							x = x.ScaleAmplitude(m.Weights[i])
-						}
-						waitForBeat(p.doc.Tempo, pulse)
-						x.Play()
-					}(m, i, pulse)
-				}
-			}
+			i.PlayLoop(p)
 		}
 	}()
 }
