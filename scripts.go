@@ -2,6 +2,7 @@ package rave
 
 type Inst interface {
 	ID() string
+	Done() <-chan bool
 }
 
 type Doc struct {
@@ -22,7 +23,7 @@ func (d *Doc) Kit() *Kit {
 	return i
 }
 
-func (d *Doc) hasKit(name string) bool {
+func (d *Doc) hasInst(name string) bool {
 	for _, k := range d.Insts {
 		if k.ID() == name {
 			return true
@@ -42,6 +43,10 @@ type Kit struct {
 
 func (k *Kit) ID() string {
 	return k.Name
+}
+
+func (k *Kit) Done() <-chan bool {
+	return k.done
 }
 
 func (k *Kit) Sample(s string) {

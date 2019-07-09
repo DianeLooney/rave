@@ -14,12 +14,12 @@ type Context struct {
 	globalBeat     ferry.Ferry
 	globalBeatOnce sync.Once
 	doc            *Doc
-	kits           map[string]*Kit
+	insts          map[string]Inst
 	beats          map[string]*ferry.Ferry
 }
 
 func (p *Context) Init() {
-	p.kits = make(map[string]*Kit)
+	p.insts = make(map[string]Inst)
 	p.beats = make(map[string]*ferry.Ferry)
 }
 
@@ -29,11 +29,11 @@ func (p *Context) Load(doc *Doc) {
 
 	if p.doc != nil {
 		for _, k := range p.doc.Insts {
-			if doc.hasKit(k.ID()) {
+			if doc.hasInst(k.ID()) {
 				continue
 			}
-			kit := p.kits[k.ID()]
-			go p.despawnKit(kit)
+			inst := p.insts[k.ID()]
+			go p.despawnInst(inst)
 		}
 	}
 
@@ -70,11 +70,11 @@ func (p *Context) spawnGlobalBeat() {
 	}
 }
 
-func (p *Context) despawnKit(k *Kit) {
-	<-k.done
+func (p *Context) despawnInst(i Inst) {
+	<-i.Done()
 	p.mtx.Lock()
 	defer p.mtx.Unlock()
-	delete(p.kits, k.Name)
+	delete(p.insts, i.ID())
 }
 
 func (p *Context) spawnKit(k *Kit) {
@@ -90,11 +90,11 @@ func (p *Context) spawnKit(k *Kit) {
 	}
 	beat := p.beats[k.Name]
 	go func() {
-		if old := p.kits[k.Name]; old != nil {
-			<-old.done
+		if old := p.insts[k.ID()]; old != nil {
+			<-old.Done()
 		}
 		p.mtx.Lock()
-		p.kits[k.Name] = k
+		p.insts[k.ID()] = k
 		p.mtx.Unlock()
 		for {
 			select {
