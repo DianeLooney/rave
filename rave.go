@@ -1,6 +1,7 @@
 package rave
 
 import (
+	"log"
 	"sync"
 	"time"
 
@@ -28,24 +29,29 @@ func (p *Context) Load(doc *Doc) {
 
 	if p.doc != nil {
 		for _, k := range p.doc.Insts {
-			if doc.hasKit(k.Name) {
+			if doc.hasKit(k.ID()) {
 				continue
 			}
-			kit := p.kits[k.Name]
+			kit := p.kits[k.ID()]
 			go p.despawnKit(kit)
 		}
 	}
 
 	p.doc = doc
 	for _, k := range p.doc.Insts {
-		_, ok := p.beats[k.Name]
+		_, ok := p.beats[k.ID()]
 		if !ok {
 			v := ferry.New()
-			p.beats[k.Name] = &v
+			p.beats[k.ID()] = &v
 		}
 	}
-	for _, k := range p.doc.Insts {
-		go p.spawnKit(k)
+	for _, i := range p.doc.Insts {
+		switch v := i.(type) {
+		case *Kit:
+			go p.spawnKit(v)
+		default:
+			log.Fatalf("Unsupported type in Context.Load: '%T'\n", i)
+		}
 	}
 	go p.globalBeatOnce.Do(p.spawnGlobalBeat)
 }

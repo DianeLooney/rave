@@ -1,13 +1,14 @@
 package rave
 
 type Inst interface {
+	ID() string
 }
 
 type Doc struct {
 	TimeTop float64
 	TimeBot float64
 	Tempo   float64
-	Insts   []*Kit
+	Insts   []Inst
 }
 
 func (d *Doc) Kit() *Kit {
@@ -23,7 +24,7 @@ func (d *Doc) Kit() *Kit {
 
 func (d *Doc) hasKit(name string) bool {
 	for _, k := range d.Insts {
-		if k.Name == name {
+		if k.ID() == name {
 			return true
 		}
 	}
@@ -37,6 +38,10 @@ type Kit struct {
 	Volume  float64
 	loop    *Loop
 	done    chan bool
+}
+
+func (k *Kit) ID() string {
+	return k.Name
 }
 
 func (k *Kit) Sample(s string) {
