@@ -52,6 +52,7 @@ func (p *Context) Load(doc *Doc) {
 func (p *Context) spawnGlobalBeat() {
 	p.globalBeat = ferry.New()
 
+	time.Sleep(250 * time.Millisecond)
 	next := time.Now()
 	for {
 		p.globalBeat.Done()
