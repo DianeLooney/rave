@@ -1,6 +1,8 @@
 package rave
 
 import (
+	"fmt"
+
 	"github.com/dianelooney/rave/music"
 
 	"github.com/dianelooney/rave/out"
@@ -13,6 +15,7 @@ type Wave struct {
 	Volume    float64
 	BaseFreq  float64
 	Harmonics []float64
+	Pattern   string
 	FadeIn    float64
 	FadeOut   float64
 	chord     music.Chord
@@ -76,7 +79,11 @@ func (w *Wave) PlayLoop(ctx *Context) {
 				}
 				for i, pulse := range m.Pulses {
 					go func(m *WaveMeasure, i int, pulse float64) {
-						waveform := waves.Sin
+						waveform, ok := waves.Patterns[w.Pattern]
+						if !ok {
+							waveform = waves.Sin
+							fmt.Printf("Unrecognized pattern '%s'\n", w.Pattern)
+						}
 						newWaveform := waveform
 						sum := 1.0
 						for _, h := range w.Harmonics {

@@ -2,6 +2,7 @@ package music
 
 import (
 	"math"
+	"math/rand"
 	"strconv"
 	"strings"
 )
@@ -25,6 +26,15 @@ func (c Chord) Multiplier(s string) float64 {
 	}
 
 	i, _ := strconv.Atoi(s)
+	if s == "?" {
+		i = rand.Intn(len(c))
+		modifier := rand.Intn(8)
+		if modifier == 0 {
+			i--
+		} else if modifier == 1 {
+			i++
+		}
+	}
 	var x float64
 	if len(c) != 0 {
 		for i < 0 {

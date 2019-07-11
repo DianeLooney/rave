@@ -54,7 +54,7 @@ func (n Note) Play() {
 
 	s.FadeIn(0.05)
 	s.ScaleAmplitude(n.Intensity)
-	s.TaperOff(0.05)
+	s.FadeOut(0.05)
 
 	if _, err := p.Write(s.ToByteStream()); err != nil {
 		log.Fatalf("Unable to write to buffer:\n%v", err)

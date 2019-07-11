@@ -127,6 +127,13 @@ var Nil WaveFunc = func(offset float64) float64 { return 0 }
 //var Experiment = Sin.Compose(Bend(0, 440, 1/(pitches.HalfStep*pitches.HalfStep)))
 var Experiment WaveFunc
 
+var Patterns = map[string]WaveFunc{
+	"sin":        Sin,
+	"triangle":   Triangle,
+	"square":     Square,
+	"experiment": Experiment,
+}
+
 func init() {
 	/*
 		p1 := Triangle.Mult(Square).Expand(0.5).Amplitude(0.01)
@@ -141,5 +148,8 @@ func init() {
 		p4 := p1.Add(p2).Add(p3).Amplitude(0.3).ShiftY(0.6)
 		Experiment = Sin.Mult(p4).Amplitude(0.6)
 	*/
-	Experiment = Sin.Compose(Bend(0, 440, 0.5))
+	p1 := Triangle.Mult(Square).Expand(0.5).Amplitude(0.01)
+	p2 := Sin.Shrink(2).Amplitude(0.1)
+	p3 := Square.Shrink(12).Amplitude(0.07)
+	Experiment = p1.Add(p2).Add(p3)
 }
