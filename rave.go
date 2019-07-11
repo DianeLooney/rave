@@ -91,8 +91,12 @@ func (p *Context) spawnInst(i Inst) {
 	}()
 }
 
-func waitForBeat(bpm float64, count float64) {
+func beatLength(bpm float64, count float64) time.Duration {
 	seconds := (60 / float64(bpm)) * count
-	elapsed := time.Duration(float64(time.Second) * seconds)
+	return time.Duration(float64(time.Second) * seconds)
+}
+
+func waitForBeat(bpm float64, count float64) {
+	elapsed := beatLength(bpm, count)
 	<-time.NewTimer(elapsed).C
 }

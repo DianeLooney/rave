@@ -30,7 +30,7 @@ func loadFile() {
 	d := rave.Doc{}
 	err = e.Execute(&d)
 	if err != nil {
-		log.Fatalf("Unable to execute directive: %v\n", err)
+		log.Printf("Unable to execute directive: %v\n", err)
 	}
 	ctx.Load(&d)
 }

@@ -1,29 +1,43 @@
-TimeTop 4
-TimeBot 4
-Tempo 90
+TimeTop 12
+TimeBot 8
+Tempo 150
 
 Kit {
-    Name "apple"
-    Sample "808s_1"
+    Name "a"
     Volume 0.1
-    Sync "global"
+    Sample "808s_5"
     Loop {
         Measure {
-            [Pulse  1 2 3 4]
+            [Pulse 1  3 4  6 7  9 10   12]
         }
     }
 }
 
 Kit {
-    Name "banana"
-    [Sample "claps_1" "claps_4"]
+    Name "b"
     Volume 0.1
-    Sync "global"
+    Sample "hihats_2"
     Loop {
         Measure {
-            [Weight 1 3    1 1   1]
-            [Sample 0 1    0 0   0]
-            [Pulse  1 1.88 2 3.5 4.5]
+            [Pulse 2 3  5 6 8 9 11 12]
+        }
+    }
+}
+
+
+Wave {
+    Name "carrot"
+    Volume 0.01
+    BaseFreq 440
+    Chord "major"
+
+    [Harmonic 3 5]
+    Loop {
+        Measure {
+            [Weight 1    0.5  1    0.5  1    0.5  1     0.5]
+            [Len    2    1    2    1    2    1    2     1  ]
+            [Note   1    3    5    2    4    2    4     2  ]
+            [Pulse  1    3    4    6    7    9    10    12 ]
         }
     }
 }

@@ -1,7 +1,6 @@
 package waves
 
 import (
-	"fmt"
 	"math"
 )
 
@@ -76,8 +75,6 @@ func Bend(t0, t1, r float64) WaveFunc {
 
 	// a*a*t0 + b*t0 + c = t0
 	c = t0 - b*t0 - a*a*t0
-
-	fmt.Printf("%v x^x + %v x + %v\n", a, b, c)
 
 	// for x > t1, g(x) = rx + d
 	// g(t1) = f(t1)
