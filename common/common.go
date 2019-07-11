@@ -99,7 +99,7 @@ func (s *Sound) FadeIn(pct float64) *Sound {
 	return s
 }
 
-func (s *Sound) TaperOff(pct float64) *Sound {
+func (s *Sound) FadeOut(pct float64) *Sound {
 	count := pct * float64(len(s.Waveform))
 	for i := 1; i < int(count); i++ {
 		mult := float64(i) / count

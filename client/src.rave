@@ -30,6 +30,8 @@ Wave {
     Volume 0.01
     BaseFreq 440
     Chord "major"
+    FadeIn 0.2
+    FadeOut 0.4
 
     [Harmonic 3 5]
     Loop {

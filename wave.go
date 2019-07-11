@@ -13,6 +13,8 @@ type Wave struct {
 	Volume    float64
 	BaseFreq  float64
 	Harmonics []float64
+	FadeIn    float64
+	FadeOut   float64
 	chord     music.Chord
 	loops     []*WaveLoop
 	done      chan bool
@@ -98,6 +100,12 @@ func (w *Wave) PlayLoop(ctx *Context) {
 							length = m.Lengths[i]
 						}
 						snd := out.Generate(waveform, freq, beatLength(ctx.doc.Tempo, length))
+						if w.FadeIn != 0 {
+							snd.FadeIn(w.FadeIn)
+						}
+						if w.FadeOut != 0 {
+							snd.FadeOut(w.FadeOut)
+						}
 						waitForBeat(ctx.doc.Tempo, pulse)
 						snd.Play()
 					}(m, i, pulse)
