@@ -1,6 +1,6 @@
-TimeTop 9
+TimeTop 6
 TimeBot 8
-Tempo 220
+Tempo 150
 
 Kit {
     Name "a"
@@ -8,9 +8,7 @@ Kit {
     [Sample "808s_2" "hihats_1"]
     Loop {
         Measure {
-            [Weight	1	0.5	2	0.5	1	0.5	2	0.5	0.5]
-            [Sample	0	1	0	1	0	1	0	1	1]
-            [Pulse 	1	1	3	4	5	6	7	8	9]
+            [Pulse 	1	2	3			]
         }
     }
 }
@@ -19,31 +17,16 @@ Wave {
     Name "carrot"
     Volume 0.01
     BaseFreq 440
-    Chord "minor"
-    Pattern "square"
-    FadeIn 0.4
-    FadeOut 0.6
+    Chord "major"
+    Pattern "sin"
+    Vibrato 1
 
-    [Harmonic 3 5]
+    [Harmonic 2 3 5 7]
     Loop {
         Measure {
-            [Note 	0	?	3	?	4	?	1	?	?]
-            [Len  	4	1	2	1	1	1	0.5	0.5	0.5]
-            [Pulse	1	2	3	4	5	6	7	8	9]
-        }
-    }
-    Loop{
-        Measure {
-            [Note		3	?	2	?	2	?	1	?	?]
-            [Len		2	1	1	1	1	1	3	1	1]
-            [Pulse  	1	2	3	4	5	6	7	8	9]
-        }
-    }
-    Loop{
-        Measure {
-            [Note   	1	?	1	?	1	?	1	?	?]
-            [Len		2	1	2	1	2	1 	3	2	1]
-            [Pulse  	1	2	3	4	5	6	7	8	9]
+            [Note 	1]
+            [Len  	6]
+            [Pulse	1]
         }
     }
 }

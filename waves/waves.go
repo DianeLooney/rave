@@ -2,6 +2,8 @@ package waves
 
 import (
 	"math"
+
+	"github.com/dianelooney/rave/music"
 )
 
 type WaveFunc func(offset float64) float64
@@ -92,6 +94,18 @@ func Bend(t0, t1, r float64) WaveFunc {
 	}
 }
 
+func Vibrato(t1, r float64) WaveFunc {
+	pd := 2 * t1
+	a := (r - 1) / pd
+	return func(x float64) float64 {
+		x -= math.Floor(x/pd) * pd
+		if x > t1 {
+			x = pd - x
+		}
+		return a*x*x + x
+	}
+}
+
 var Triangle = Saw(0.25)
 
 func Saw(peak float64) WaveFunc {
@@ -124,13 +138,15 @@ var Nil WaveFunc = func(offset float64) float64 { return 0 }
 
 //var Experiment = Sin.Expand(1)
 //var Experiment = Sin.Mult(Sin.Amplitude(0.1).ShiftY(0.6).Shrink(9))
-//var Experiment = Sin.Compose(Bend(0, 440, 1/(pitches.HalfStep*pitches.HalfStep)))
-var Experiment WaveFunc
+var Experiment = Sin.Compose(Bend(0, 2200, 1/(music.HalfStep*music.HalfStep)))
+
+// var Experiment WaveFunc
 
 var Patterns = map[string]WaveFunc{
 	"sin":        Sin,
 	"triangle":   Triangle,
 	"square":     Square,
+	"saw":        Saw(0),
 	"experiment": Experiment,
 }
 
@@ -148,8 +164,10 @@ func init() {
 		p4 := p1.Add(p2).Add(p3).Amplitude(0.3).ShiftY(0.6)
 		Experiment = Sin.Mult(p4).Amplitude(0.6)
 	*/
-	p1 := Triangle.Mult(Square).Expand(0.5).Amplitude(0.01)
-	p2 := Sin.Shrink(2).Amplitude(0.1)
-	p3 := Square.Shrink(12).Amplitude(0.07)
-	Experiment = p1.Add(p2).Add(p3)
+	/*
+		p1 := Triangle.Mult(Square).Expand(0.5).Amplitude(0.01)
+		p2 := Sin.Shrink(2).Amplitude(0.1)
+		p3 := Square.Shrink(12).Amplitude(0.07)
+		Experiment = p1.Add(p2).Add(p3)
+	*/
 }

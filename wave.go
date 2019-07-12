@@ -18,6 +18,7 @@ type Wave struct {
 	Pattern   string
 	FadeIn    float64
 	FadeOut   float64
+	Vibrato   float64
 	chord     music.Chord
 	loops     []*WaveLoop
 	done      chan bool
@@ -83,6 +84,9 @@ func (w *Wave) PlayLoop(ctx *Context) {
 						if !ok {
 							waveform = waves.Sin
 							fmt.Printf("Unrecognized pattern '%s'\n", w.Pattern)
+						}
+						if w.Vibrato != 0 {
+							waveform = waveform.Compose(waves.Vibrato(2000, 0.05))
 						}
 						newWaveform := waveform
 						sum := 1.0
