@@ -36,7 +36,7 @@ func (w *Wave) SyncID() string {
 }
 
 func (w *Wave) Loop() *WaveLoop {
-	l := &WaveLoop{Times: -1}
+	l := &WaveLoop{EndTimes: -1}
 	w.loops = append(w.loops, l)
 	return l
 }
@@ -67,7 +67,7 @@ func (w *Wave) PlayLoop(ctx *Context) {
 
 	for _, loop := range w.loops {
 		for {
-			if loop.playCount >= loop.Times && loop.Times > 0 {
+			if loop.playCount >= loop.EndTimes && loop.EndTimes > 0 {
 				break
 			}
 			for i, m := range loop.Measures {
@@ -120,7 +120,7 @@ func (w *Wave) PlayLoop(ctx *Context) {
 			}
 			loop.playCount++
 
-			if loop.Times < 0 {
+			if loop.EndTimes < 0 {
 				break
 			}
 		}
@@ -129,7 +129,7 @@ func (w *Wave) PlayLoop(ctx *Context) {
 
 type WaveLoop struct {
 	playCount int
-	Times     int
+	EndTimes  int
 	Measures  []*WaveMeasure
 }
 
