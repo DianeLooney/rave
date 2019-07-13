@@ -11,12 +11,12 @@ type Pulse float64
 type Time float64
 
 type PreFilter interface {
-	Init(d Descriptor)
+	Init(d Descriptor) PreFilter
 	Apply(c1 Pulse, t1 Time) (c2 Pulse, t2 Time)
 }
 type Generator func(c Pulse) (a Amplitude)
 type PostFilter interface {
-	Init(d Descriptor)
+	Init(d Descriptor) PostFilter
 	Apply(a1 Amplitude, t1 Time) (a2 Amplitude, t2 Time)
 }
 
@@ -41,11 +41,13 @@ func pair(i int, freq float64) [2]float64 {
 
 // Generate executes the pipeline to create a sound
 func (d Descriptor) Generate() (snd common.Sound) {
-	for _, f := range d.Pipeline.PreFilters {
-		f.Init(d)
+	pres := make([]PreFilter, len(d.Pipeline.PreFilters))
+	for i, f := range d.Pipeline.PreFilters {
+		pres[i] = f.Init(d)
 	}
-	for _, f := range d.Pipeline.PostFilters {
-		f.Init(d)
+	posts := make([]PostFilter, len(d.Pipeline.PostFilters))
+	for i, f := range d.Pipeline.PostFilters {
+		posts[i] = f.Init(d)
 	}
 
 	sampleCount := int(float64(*common.SampleRate) * float64(d.Duration))
@@ -54,7 +56,7 @@ func (d Descriptor) Generate() (snd common.Sound) {
 	for i := 0; i < sampleCount; i++ {
 		store[i] = pair(i, d.Frequency)
 	}
-	for _, f := range d.Pipeline.PreFilters {
+	for _, f := range pres {
 		for i, p := range store {
 			x, y := f.Apply(Pulse(p[0]), Time(p[1]))
 			store[i] = [2]float64{float64(x), float64(y)}
@@ -64,7 +66,7 @@ func (d Descriptor) Generate() (snd common.Sound) {
 		x := d.Pipeline.Generator(Pulse(p[0]))
 		store[i][0] = float64(x)
 	}
-	for _, f := range d.Pipeline.PostFilters {
+	for _, f := range posts {
 		for i, p := range store {
 			x, y := f.Apply(Amplitude(p[0]), Time(p[1]))
 			store[i] = [2]float64{float64(x), float64(y)}
@@ -115,10 +117,12 @@ type ScaleAmplitude struct {
 	R float64
 }
 
-func (f *ScaleAmplitude) Init(d Descriptor) {}
+func (f ScaleAmplitude) Init(d Descriptor) PostFilter {
+	return f
+}
 
 // Apply applies the filter
-func (f *ScaleAmplitude) Apply(a1 Amplitude, t1 Time) (a2 Amplitude, t2 Time) {
+func (f ScaleAmplitude) Apply(a1 Amplitude, t1 Time) (a2 Amplitude, t2 Time) {
 	return Amplitude(float64(a1) * f.R), t1
 }
 
@@ -128,14 +132,16 @@ type FadeIn struct {
 }
 
 // Init initializes the filter
-func (f *FadeIn) Init(d Descriptor) {}
+func (f FadeIn) Init(d Descriptor) PostFilter {
+	return f
+}
 
 // Apply applies the filter
 func (f FadeIn) Apply(a1 Amplitude, t1 Time) (a2 Amplitude, t2 Time) {
 	if t1 < Time(f.Over) {
 		return Amplitude(float64(a1) * float64(t1) / f.Over), t1
 	}
-	return a1, t2
+	return a1, t1
 }
 
 // FadeOut is a PostFilter that fades the clip in over time
@@ -145,13 +151,18 @@ type FadeOut struct {
 }
 
 // Init initializes the filter
-func (f *FadeOut) Init(d Descriptor) {
+func (f FadeOut) Init(d Descriptor) PostFilter {
 	f.startAt = d.Duration - Time(f.Over)
+	return f
 }
 
 // Apply applies the filter
-func (f *FadeOut) Apply(a1 Amplitude, t1 Time) (a2 Amplitude, t2 Time) {
-	return Amplitude(float64(a1) * float64(t1) / f.Over), t1
+func (f FadeOut) Apply(a1 Amplitude, t1 Time) (a2 Amplitude, t2 Time) {
+	if t1 < f.startAt {
+		return a1, t2
+	}
+	fac := (f.startAt + Time(f.Over) - t1) / Time(f.Over)
+	return Amplitude(float64(fac) * float64(a1)), t1
 }
 
 type Bend struct {
@@ -159,43 +170,49 @@ type Bend struct {
 	Start float64
 	End   float64
 
-	p1 Pulse
-	p2 Pulse
+	p1 *Pulse
+	p2 *Pulse
 }
 
-func (f *Bend) Init(d Descriptor) {
-	f.p1 = 0
-	f.p2 = 0
+func (f Bend) Init(d Descriptor) PreFilter {
+	var p1, p2 Pulse
+	f.p1, f.p2 = &p1, &p2
+	return f
 }
-func (f *Bend) Apply(c1 Pulse, t1 Time) (c2 Pulse, t2 Time) {
+func (f Bend) Apply(c1 Pulse, t1 Time) (c2 Pulse, t2 Time) {
 	if t1 < Time(f.Start) {
+		*f.p1 = c1
+		*f.p2 = c1
 		return c1, t1
 	}
-	r := f.R
-	if t2 < Time(f.End) {
-		r += (1 - r) * (f.End - float64(t1)) / (f.End - f.Start)
+
+	x := 1.0
+	if t1 < Time(f.End) {
+		x = (float64(t1) - f.Start) / (f.End - f.Start)
 	}
-	inDiff := c1 - f.p1
+	r := f.R*x + (1.0)*(1-x)
+	inDiff := c1 - *f.p1
 	outDiff := inDiff * Pulse(r)
-	f.p1 = c1
-	f.p2 += outDiff
-	return f.p2, t1
+	*f.p1 = c1
+	*f.p2 += outDiff
+	return *f.p2, t1
 }
 
 type Trill struct {
 	Hz float64
 	R  float64
 
-	p1 Pulse
-	p2 Pulse
+	p1 *Pulse
+	p2 *Pulse
 }
 
-func (f *Trill) Init(d Descriptor) {
-	f.p1 = 0
-	f.p2 = 0
+func (f Trill) Init(d Descriptor) PreFilter {
+	var p1, p2 Pulse
+	f.p1, f.p2 = &p1, &p2
+	return f
 }
 
-func (f *Trill) Apply(c1 Pulse, t1 Time) (c2 Pulse, t2 Time) {
+func (f Trill) Apply(c1 Pulse, t1 Time) (c2 Pulse, t2 Time) {
 	n := int(float64(t1) * f.Hz)
 	var r float64
 	if n%2 == 0 {
@@ -203,9 +220,9 @@ func (f *Trill) Apply(c1 Pulse, t1 Time) (c2 Pulse, t2 Time) {
 	} else {
 		r = f.R
 	}
-	inDiff := c1 - f.p1
+	inDiff := c1 - *f.p1
 	outDiff := inDiff * Pulse(r)
-	f.p1 = c1
-	f.p2 += outDiff
-	return f.p2, t1
+	*f.p1 = c1
+	*f.p2 += outDiff
+	return *f.p2, t1
 }

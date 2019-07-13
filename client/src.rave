@@ -1,13 +1,13 @@
-TimeTop 6
-TimeBot 8
-Tempo   150
+TimeTop 4
+TimeBot 4
+Tempo   60
 
 Kit {
       Name    "x"
       [Sample "808s_2" "hihats_1"]
       Loop {
             Measure {
-                  [Pulse 1     2     3]
+                  [Pulse 1     2     3     4]
             }
       }
 }
@@ -17,13 +17,13 @@ Wave {
       BaseFreq 440
       Pipe {
             Trill {
-                  Hz    24
-                  R     1.1
+                  Hz 12
+                  R 0.9
             }
             Bend {
                   R     0.5
-                  Start 0
-                  End   1
+                  Start 1
+                  End   2
             }
             Wave  "sin"
 
@@ -31,10 +31,10 @@ Wave {
                   R     0.1
             }
             FadeIn {
-                  Over  0.5
+                  Over  0.1
             }
             FadeOut {
-                  Over  0.5
+                  Over  0.1
             }
       }
       Chord "major"
@@ -42,7 +42,7 @@ Wave {
       Loop {
             Measure {
                   [Note  1]
-                  [Len   3]
+                  [Len   4]
                   [Pulse 1]
             }
       }
