@@ -21,9 +21,9 @@ Wave {
                   R     1.1
             }
             Bend {
-                  R 0.5
+                  R     0.5
                   Start 0
-                  End 1 
+                  End   1
             }
             Wave  "sin"
 
