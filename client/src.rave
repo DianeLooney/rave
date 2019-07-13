@@ -4,7 +4,6 @@ Tempo   150
 
 Kit {
       Name    "x"
-      Volume  0.1
       [Sample "808s_2" "hihats_1"]
       Loop {
             Measure {
@@ -15,16 +14,35 @@ Kit {
 
 Wave {
       Name     "carrot"
-      Volume   0.01
       BaseFreq 440
-      Chord    "major"
-      Pattern  "sin"
-      Vibrato  1.05
+      Pipe {
+            Trill {
+                  Hz    24
+                  R     1.1
+            }
+            Bend {
+                  R 0.5
+                  Start 0
+                  End 1 
+            }
+            Wave  "sin"
+
+            ScaleAmplitude {
+                  R     0.1
+            }
+            FadeIn {
+                  Over  0.5
+            }
+            FadeOut {
+                  Over  0.5
+            }
+      }
+      Chord "major"
 
       Loop {
             Measure {
                   [Note  1]
-                  [Len   6]
+                  [Len   3]
                   [Pulse 1]
             }
       }

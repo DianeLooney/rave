@@ -2,27 +2,77 @@ package rave
 
 import (
 	"fmt"
-	"math"
 
 	"github.com/dianelooney/rave/music"
-
-	"github.com/dianelooney/rave/out"
 	"github.com/dianelooney/rave/waves"
 )
 
 type Wave struct {
-	Name      string
-	Sync      string
-	Volume    float64
-	BaseFreq  float64
-	Harmonics []float64
-	Pattern   string
-	FadeIn    float64
-	FadeOut   float64
-	Vibrato   float64
-	chord     music.Chord
-	loops     []*WaveLoop
-	done      chan bool
+	Name     string
+	Sync     string
+	BaseFreq float64
+	Pattern  string
+	chord    music.Chord
+	loops    []*WaveLoop
+	done     chan bool
+	pipe     *Pipe
+}
+
+func (w *Wave) Pipe() *Pipe {
+	if w.pipe == nil {
+		w.pipe = &Pipe{}
+	}
+	return w.pipe
+}
+
+type Pipe struct {
+	Pipeline waves.Pipeline
+}
+
+func (p *Pipe) Pre(s string) {
+	f, ok := waves.PreFilters[s]
+	if !ok {
+		fmt.Printf("Unable to find pre-filter '%s'\n", s)
+		return
+	}
+	p.Pipeline.PreFilters = append(p.Pipeline.PreFilters, f)
+}
+func (p *Pipe) Wave(s string) {
+	g, ok := waves.Generators[s]
+	if !ok {
+		fmt.Printf("Unable to find generator '%s'\n", s)
+		return
+	}
+	p.Pipeline.Generator = g
+}
+
+func (p *Pipe) Trill() *waves.Trill {
+	b := &waves.Trill{}
+	p.Pipeline.PreFilters = append(p.Pipeline.PreFilters, b)
+	return b
+}
+func (p *Pipe) Bend() *waves.Bend {
+	b := &waves.Bend{}
+	p.Pipeline.PreFilters = append(p.Pipeline.PreFilters, b)
+	return b
+}
+
+func (p *Pipe) FadeIn() *waves.FadeIn {
+	f := &waves.FadeIn{}
+	p.Pipeline.PostFilters = append(p.Pipeline.PostFilters, f)
+	return f
+}
+
+func (p *Pipe) FadeOut() *waves.FadeOut {
+	f := &waves.FadeOut{}
+	p.Pipeline.PostFilters = append(p.Pipeline.PostFilters, f)
+	return f
+}
+
+func (p *Pipe) ScaleAmplitude() *waves.ScaleAmplitude {
+	f := &waves.ScaleAmplitude{}
+	p.Pipeline.PostFilters = append(p.Pipeline.PostFilters, f)
+	return f
 }
 
 func (w *Wave) ID() string {
@@ -43,9 +93,11 @@ func (w *Wave) Loop() *WaveLoop {
 	return l
 }
 
+/*
 func (w *Wave) Harmonic(f float64) {
 	w.Harmonics = append(w.Harmonics, f)
 }
+*/
 
 var predefinedChords = map[string]music.Chord{
 	"major": {0, 2, 4, 5, 7, 9, 11},
@@ -81,43 +133,23 @@ func (w *Wave) PlayLoop(ctx *Context) {
 				}
 				for i, pulse := range m.Pulses {
 					go func(m *WaveMeasure, i int, pulse float64) {
-						waveform, ok := waves.Patterns[w.Pattern]
-						if !ok {
-							waveform = waves.Sin
-							fmt.Printf("Unrecognized pattern '%s'\n", w.Pattern)
+						length := 1.0
+						if i < len(m.Lengths) {
+							length = m.Lengths[i]
 						}
-						if w.Vibrato != 0 {
-							waveform = waveform.Compose(waves.Vibrato(200, w.Vibrato).Shrink(math.Sqrt(w.Vibrato)))
-						}
-						newWaveform := waveform
-						sum := 1.0
-						for _, h := range w.Harmonics {
-							newWaveform = newWaveform.Add(waveform.Shrink(h).Amplitude(1 / h))
-							sum += 1 / h
-						}
-						waveform = newWaveform.Amplitude(1 / sum)
-
-						waveform = waveform.Amplitude(w.Volume)
-						if i < len(m.Weights) {
-							waveform = waveform.Amplitude(m.Weights[i])
-						}
-
 						var freq = w.BaseFreq
 						if i < len(m.Notes) {
 							m := w.chord.Multiplier(m.Notes[i])
 							freq *= m
 						}
-						length := 1.0
-						if i < len(m.Lengths) {
-							length = m.Lengths[i]
+						t := waves.Time(length * (60 / ctx.doc.Tempo))
+						desc := waves.Descriptor{
+							Pipeline:  w.pipe.Pipeline,
+							Frequency: freq,
+							Duration:  t,
 						}
-						snd := out.Generate(waveform, freq, beatLength(ctx.doc.Tempo, length))
-						if w.FadeIn != 0 {
-							snd.FadeIn(w.FadeIn)
-						}
-						if w.FadeOut != 0 {
-							snd.FadeOut(w.FadeOut)
-						}
+						snd := desc.Generate()
+
 						waitForBeat(ctx.doc.Tempo, pulse)
 						snd.Play()
 					}(m, i, pulse)

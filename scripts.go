@@ -27,10 +27,9 @@ func (d *Doc) Kit() *Kit {
 
 func (d *Doc) Wave() *Wave {
 	w := &Wave{
-		Name:   "",
-		Volume: 0.1,
-		Sync:   "global",
-		done:   make(chan bool),
+		Name: "",
+		Sync: "global",
+		done: make(chan bool),
 	}
 	d.Insts = append(d.Insts, w)
 	return w
