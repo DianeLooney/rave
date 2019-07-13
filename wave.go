@@ -2,6 +2,7 @@ package rave
 
 import (
 	"fmt"
+	"math"
 
 	"github.com/dianelooney/rave/music"
 
@@ -86,7 +87,7 @@ func (w *Wave) PlayLoop(ctx *Context) {
 							fmt.Printf("Unrecognized pattern '%s'\n", w.Pattern)
 						}
 						if w.Vibrato != 0 {
-							waveform = waveform.Compose(waves.Vibrato(2000, 0.05))
+							waveform = waveform.Compose(waves.Vibrato(200, w.Vibrato).Shrink(math.Sqrt(w.Vibrato)))
 						}
 						newWaveform := waveform
 						sum := 1.0

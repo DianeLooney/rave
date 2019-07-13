@@ -1,32 +1,31 @@
 TimeTop 6
 TimeBot 8
-Tempo 150
+Tempo   150
 
 Kit {
-    Name "a"
-    Volume 0.1
-    [Sample "808s_2" "hihats_1"]
-    Loop {
-        Measure {
-            [Pulse 	1	2	3			]
-        }
-    }
+      Name    "x"
+      Volume  0.1
+      [Sample "808s_2" "hihats_1"]
+      Loop {
+            Measure {
+                  [Pulse 1     2     3]
+            }
+      }
 }
 
 Wave {
-    Name "carrot"
-    Volume 0.01
-    BaseFreq 440
-    Chord "major"
-    Pattern "sin"
-    Vibrato 1
+      Name     "carrot"
+      Volume   0.01
+      BaseFreq 440
+      Chord    "major"
+      Pattern  "sin"
+      Vibrato  1.05
 
-    [Harmonic 2 3 5 7]
-    Loop {
-        Measure {
-            [Note 	1]
-            [Len  	6]
-            [Pulse	1]
-        }
-    }
+      Loop {
+            Measure {
+                  [Note  1]
+                  [Len   6]
+                  [Pulse 1]
+            }
+      }
 }

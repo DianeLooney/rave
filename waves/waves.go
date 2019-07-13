@@ -98,11 +98,13 @@ func Vibrato(t1, r float64) WaveFunc {
 	pd := 2 * t1
 	a := (r - 1) / pd
 	return func(x float64) float64 {
-		x -= math.Floor(x/pd) * pd
+		d := math.Floor(x / pd)
+		x -= d * pd
 		if x > t1 {
 			x = pd - x
 		}
-		return a*x*x + x
+		//fmt.Printf("%v\t%v\t%v\t%v\n", pd, t1, x, a*x*x+x)
+		return a*x*x + x + d*pd
 	}
 }
 
