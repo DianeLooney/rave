@@ -9,16 +9,16 @@ import (
 
 type Context struct {
 	mtx            sync.Mutex
-	globalBeat     ferry.Ferry
+	globalBeat     *ferry.Value
 	globalBeatOnce sync.Once
 	doc            *Doc
 	insts          map[string]Inst
-	beats          map[string]*ferry.Ferry
+	beats          map[string]*ferry.Value
 }
 
 func (p *Context) Init() {
 	p.insts = make(map[string]Inst)
-	p.beats = make(map[string]*ferry.Ferry)
+	p.beats = make(map[string]*ferry.Value)
 }
 
 func (p *Context) Load(doc *Doc) {
@@ -39,8 +39,7 @@ func (p *Context) Load(doc *Doc) {
 	for _, k := range p.doc.Insts {
 		_, ok := p.beats[k.ID()]
 		if !ok {
-			v := ferry.New()
-			p.beats[k.ID()] = &v
+			p.beats[k.ID()] = ferry.NewValue()
 		}
 	}
 	for _, i := range p.doc.Insts {
@@ -50,12 +49,12 @@ func (p *Context) Load(doc *Doc) {
 }
 
 func (p *Context) spawnGlobalBeat() {
-	p.globalBeat = ferry.New()
+	p.globalBeat = ferry.NewValue()
 
 	time.Sleep(250 * time.Millisecond)
 	next := time.Now()
 	for {
-		p.globalBeat.Done()
+		p.globalBeat.Done(next)
 
 		seconds := (60 / float64(p.doc.Tempo)) * p.doc.TimeTop
 		elapsed := time.Duration(float64(time.Second) * seconds)
@@ -96,7 +95,8 @@ func beatLength(bpm float64, count float64) time.Duration {
 	return time.Duration(float64(time.Second) * seconds)
 }
 
-func waitForBeat(bpm float64, count float64) {
+func waitForBeat(t time.Time, bpm float64, count float64) {
 	elapsed := beatLength(bpm, count)
-	<-time.NewTimer(elapsed).C
+	until := time.Until(t.Add(elapsed))
+	<-time.NewTimer(until).C
 }

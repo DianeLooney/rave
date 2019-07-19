@@ -4,7 +4,7 @@ require (
 	github.com/ajstarks/svgo v0.0.0-20181006003313-6ce6a3bcf6cd // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dianelooney/directive v0.0.0-20190713060337-556c48c92769
-	github.com/dianelooney/ferry v0.0.0-20190709010308-21159dbe8960
+	github.com/dianelooney/ferry v0.0.0-20190710154436-66595e73f55d
 	github.com/fogleman/gg v1.3.0 // indirect
 	github.com/fsnotify/fsnotify v1.4.7
 	github.com/go-fsnotify/fsnotify v0.0.0-20180321022601-755488143dae // indirect

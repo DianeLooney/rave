@@ -1,6 +1,10 @@
 package rave
 
-import "github.com/dianelooney/rave/common"
+import (
+	"time"
+
+	"github.com/dianelooney/rave/common"
+)
 
 type Kit struct {
 	Name    string
@@ -43,16 +47,19 @@ func (k *Kit) PlayLoop(ctx *Context) {
 	}
 	sync, ok := ctx.beats[k.SyncID()]
 	if !ok {
-		sync = &ctx.globalBeat
+		sync = ctx.globalBeat
 	}
 	beat := ctx.beats[k.ID()]
 	for i, m := range k.loop.Measures {
+		var mStart time.Time
 		if i == 0 {
-			sync.Wait()
-			beat.Done()
+			v := sync.Wait()
+			mStart = v.(time.Time)
+			beat.Done(mStart)
 		} else {
-			ctx.globalBeat.Wait()
+			mStart = ctx.globalBeat.Wait().(time.Time)
 		}
+
 		for i, pulse := range m.Pulses {
 			go func(m *KitMeasure, i int, pulse float64) {
 				sampleI := 0
@@ -67,7 +74,7 @@ func (k *Kit) PlayLoop(ctx *Context) {
 				if i < len(m.Weights) {
 					x = x.ScaleAmplitude(m.Weights[i])
 				}
-				waitForBeat(ctx.doc.Tempo, pulse)
+				waitForBeat(mStart, ctx.doc.Tempo, pulse)
 				x.Play()
 			}(m, i, pulse)
 		}

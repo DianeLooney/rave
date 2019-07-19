@@ -58,6 +58,8 @@ github.com/dianelooney/ferry v0.0.0-20190708165058-49a9fceeeea4 h1:zDqjP46BWY3aH
 github.com/dianelooney/ferry v0.0.0-20190708165058-49a9fceeeea4/go.mod h1:R093McRgAFPltvCevePzBL5UW1pRN5/ufJNtciZr2O4=
 github.com/dianelooney/ferry v0.0.0-20190709010308-21159dbe8960 h1:BJr4WYUb8Ocb5OIwlufnIsD3FAlTJKpRGGge/K9dPUo=
 github.com/dianelooney/ferry v0.0.0-20190709010308-21159dbe8960/go.mod h1:R093McRgAFPltvCevePzBL5UW1pRN5/ufJNtciZr2O4=
+github.com/dianelooney/ferry v0.0.0-20190710154436-66595e73f55d h1:mWI2F4Mn14Cs7jNMNvMD4esY7IgedV1bKYkbN3T7G18=
+github.com/dianelooney/ferry v0.0.0-20190710154436-66595e73f55d/go.mod h1:R093McRgAFPltvCevePzBL5UW1pRN5/ufJNtciZr2O4=
 github.com/fogleman/gg v1.2.1-0.20190220221249-0403632d5b90/go.mod h1:R/bRT+9gY/C5z7JzPU0zXsXHKM4/ayA+zqcVNZzPa1k=
 github.com/fogleman/gg v1.3.0 h1:/7zJX8F6AaYQc57WQCyN9cAIz+4bCJGO9B+dyW29am8=
 github.com/fogleman/gg v1.3.0/go.mod h1:R/bRT+9gY/C5z7JzPU0zXsXHKM4/ayA+zqcVNZzPa1k=

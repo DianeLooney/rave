@@ -2,6 +2,7 @@ package rave
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/dianelooney/rave/music"
 	"github.com/dianelooney/rave/waves"
@@ -44,6 +45,12 @@ func (p *Pipe) Wave(s string) {
 		return
 	}
 	p.Pipeline.Generator = g
+}
+
+func (p *Pipe) Vibrato() *waves.Vibrato {
+	b := &waves.Vibrato{}
+	p.Pipeline.PreFilters = append(p.Pipeline.PreFilters, b)
+	return b
 }
 
 func (p *Pipe) Trill() *waves.Trill {
@@ -115,7 +122,7 @@ func (w *Wave) Chord(s string) {
 func (w *Wave) PlayLoop(ctx *Context) {
 	sync, ok := ctx.beats[w.SyncID()]
 	if !ok {
-		sync = &ctx.globalBeat
+		sync = ctx.globalBeat
 	}
 	beat := ctx.beats[w.ID()]
 
@@ -125,12 +132,14 @@ func (w *Wave) PlayLoop(ctx *Context) {
 				break
 			}
 			for i, m := range loop.Measures {
+				var mStart time.Time
 				if i == 0 {
-					sync.Wait()
-					beat.Done()
+					mStart = sync.Wait().(time.Time)
+					beat.Done(mStart)
 				} else {
-					ctx.globalBeat.Wait()
+					mStart = ctx.globalBeat.Wait().(time.Time)
 				}
+
 				for i, pulse := range m.Pulses {
 					go func(m *WaveMeasure, i int, pulse float64) {
 						length := 1.0
@@ -150,7 +159,7 @@ func (w *Wave) PlayLoop(ctx *Context) {
 						}
 						snd := desc.Generate()
 
-						waitForBeat(ctx.doc.Tempo, pulse)
+						waitForBeat(mStart, ctx.doc.Tempo, pulse)
 						snd.Play()
 					}(m, i, pulse)
 				}

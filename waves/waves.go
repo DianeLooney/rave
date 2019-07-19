@@ -1,9 +1,5 @@
 package waves
 
-import (
-	"math"
-)
-
 type WaveFunc func(offset float64) float64
 
 func (w WaveFunc) ShiftX(x float64) WaveFunc {
@@ -33,19 +29,6 @@ func (w WaveFunc) Expand(r float64) WaveFunc {
 func (w WaveFunc) Shrink(r float64) WaveFunc {
 	return func(offset float64) float64 {
 		return w(offset * r)
-	}
-}
-
-func Vibrato(t1, r float64) WaveFunc {
-	pd := 2 * t1
-	a := (r - 1) / pd
-	return func(x float64) float64 {
-		d := math.Floor(x / pd)
-		x -= d * pd
-		if x > t1 {
-			x = pd - x
-		}
-		return a*x*x + x + d*pd
 	}
 }
 

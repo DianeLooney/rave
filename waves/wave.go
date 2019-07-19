@@ -112,6 +112,30 @@ var Generators = map[string]Generator{
 	},
 }
 
+type Vibrato struct {
+	R  float64
+	Hz float64
+
+	c1 *Pulse
+	c2 *Pulse
+}
+
+func (f Vibrato) Init(d Descriptor) PreFilter {
+	var c1, c2 Pulse
+	f.c1 = &c1
+	f.c2 = &c2
+	return f
+}
+
+func (f Vibrato) Apply(c1 Pulse, t1 Time) (c2 Pulse, t2 Time) {
+	r := 1 + f.R*math.Sin(2*math.Pi*float64(t1)*f.Hz)
+	diffIn := c1 - *f.c1
+	diffOut := diffIn * Pulse(r)
+	*f.c1 = c1
+	*f.c2 += diffOut
+	return *f.c2, t1
+}
+
 // ScaleAmplitude does what it says
 type ScaleAmplitude struct {
 	R float64
