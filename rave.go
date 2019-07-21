@@ -71,7 +71,11 @@ func (p *Context) despawnInst(i Inst) {
 }
 func (p *Context) spawnInst(i Inst) {
 	go func() {
-		if old := p.insts[i.ID()]; old != nil {
+		p.mtx.Lock()
+		old := p.insts[i.ID()]
+		p.mtx.Unlock()
+
+		if old != nil {
 			<-old.Done()
 		}
 
