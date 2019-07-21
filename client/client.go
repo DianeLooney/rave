@@ -21,11 +21,13 @@ func init() {
 func loadFile() {
 	bytes, err := ioutil.ReadFile(src)
 	if err != nil {
-		log.Fatalf("Unable to read file: %v\n", err)
+		log.Printf("Unable to read file: %v\n", err)
+		return
 	}
 	e, err := directive.Prepare(bytes)
 	if err != nil {
-		log.Fatalf("Unable to prepare directives: %v\n", err)
+		log.Printf("Unable to prepare directives: %v\n", err)
+		return
 	}
 	d := rave.Doc{}
 	err = e.Execute(&d)
