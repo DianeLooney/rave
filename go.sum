@@ -54,6 +54,12 @@ github.com/dianelooney/directive v0.0.0-20190713000845-bbb13adb370c h1:cm6rdHXXl
 github.com/dianelooney/directive v0.0.0-20190713000845-bbb13adb370c/go.mod h1:L5DJmbnDYn2a02Zs+IpVG28z/NzWi1SWxQoCFt31czE=
 github.com/dianelooney/directive v0.0.0-20190713060337-556c48c92769 h1:2vcVOjyaHuMTwzoxz9Sty2UAq8s8XGG/EpAg9NK8p/I=
 github.com/dianelooney/directive v0.0.0-20190713060337-556c48c92769/go.mod h1:L5DJmbnDYn2a02Zs+IpVG28z/NzWi1SWxQoCFt31czE=
+github.com/dianelooney/directive v0.0.0-20190721192533-02cddc768930 h1:dpnQq4jZei8700BAKNhVXA9fRjvqOrDUmGfhQvgMwX8=
+github.com/dianelooney/directive v0.0.0-20190721192533-02cddc768930/go.mod h1:L5DJmbnDYn2a02Zs+IpVG28z/NzWi1SWxQoCFt31czE=
+github.com/dianelooney/directive v0.0.0-20190721192836-92d2da8ceb78 h1:WmPlHUk3sO0gH++SiKK1T3/K6ZIuFw5o3PdAkuLpFDE=
+github.com/dianelooney/directive v0.0.0-20190721192836-92d2da8ceb78/go.mod h1:L5DJmbnDYn2a02Zs+IpVG28z/NzWi1SWxQoCFt31czE=
+github.com/dianelooney/directive v0.0.0-20190721193053-47cb1d8b9540 h1:9r0z6cgcDd2RJSYilQz2W4dnAB0POLm+AQ3xhq88S/c=
+github.com/dianelooney/directive v0.0.0-20190721193053-47cb1d8b9540/go.mod h1:L5DJmbnDYn2a02Zs+IpVG28z/NzWi1SWxQoCFt31czE=
 github.com/dianelooney/ferry v0.0.0-20190708165058-49a9fceeeea4 h1:zDqjP46BWY3aH+7fgn7ABYLaauoolUbOMckTzJRrU5I=
 github.com/dianelooney/ferry v0.0.0-20190708165058-49a9fceeeea4/go.mod h1:R093McRgAFPltvCevePzBL5UW1pRN5/ufJNtciZr2O4=
 github.com/dianelooney/ferry v0.0.0-20190709010308-21159dbe8960 h1:BJr4WYUb8Ocb5OIwlufnIsD3FAlTJKpRGGge/K9dPUo=
