@@ -3,7 +3,7 @@ module github.com/dianelooney/rave
 require (
 	github.com/ajstarks/svgo v0.0.0-20181006003313-6ce6a3bcf6cd // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/dianelooney/directive v0.0.0-20190721193053-47cb1d8b9540
+	github.com/dianelooney/directive v0.0.0-20190723064423-675c906f4443
 	github.com/dianelooney/ferry v0.0.0-20190710154436-66595e73f55d
 	github.com/fogleman/gg v1.3.0 // indirect
 	github.com/fsnotify/fsnotify v1.4.7
