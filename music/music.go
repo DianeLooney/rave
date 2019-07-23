@@ -13,6 +13,7 @@ func (b BPM) SecondsPerBeat() float64 {
 }
 
 type Measure struct {
+	Size float64
 	TimeSignature
 	Tempo BPM
 	Beats []Beat

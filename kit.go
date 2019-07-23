@@ -78,6 +78,10 @@ func (k *Kit) PlayLoop(ctx *Context) {
 				x.Play()
 			}(m, i, pulse)
 		}
+
+		for i := 1; i < int(m.Size); i++ {
+			ctx.globalBeat.Wait()
+		}
 	}
 }
 
@@ -86,12 +90,13 @@ type KitLoop struct {
 }
 
 func (l *KitLoop) Measure() *KitMeasure {
-	m := &KitMeasure{}
+	m := &KitMeasure{Size: 1}
 	l.Measures = append(l.Measures, m)
 	return m
 }
 
 type KitMeasure struct {
+	Size    float64
 	Weights []float64
 	Samples []int
 	Pulses  []float64

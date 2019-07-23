@@ -163,6 +163,10 @@ func (w *Wave) PlayLoop(ctx *Context) {
 						snd.Play()
 					}(m, i, pulse)
 				}
+
+				for i := 1; i < int(m.Size); i++ {
+					ctx.globalBeat.Wait()
+				}
 			}
 			loop.playCount++
 
@@ -180,12 +184,13 @@ type WaveLoop struct {
 }
 
 func (l *WaveLoop) Measure() *WaveMeasure {
-	m := &WaveMeasure{}
+	m := &WaveMeasure{Size: 1}
 	l.Measures = append(l.Measures, m)
 	return m
 }
 
 type WaveMeasure struct {
+	Size    float64
 	Weights []float64
 	Notes   []string
 	Lengths []float64
