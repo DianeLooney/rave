@@ -64,6 +64,8 @@ github.com/dianelooney/directive v0.0.0-20190723062829-d2105f6a3821 h1:hX839LtaQ
 github.com/dianelooney/directive v0.0.0-20190723062829-d2105f6a3821/go.mod h1:L5DJmbnDYn2a02Zs+IpVG28z/NzWi1SWxQoCFt31czE=
 github.com/dianelooney/directive v0.0.0-20190723064423-675c906f4443 h1:OKdyxvHLsgYAxSzy1ibTf7Fjv73GMUKNeNt43eLA/X0=
 github.com/dianelooney/directive v0.0.0-20190723064423-675c906f4443/go.mod h1:L5DJmbnDYn2a02Zs+IpVG28z/NzWi1SWxQoCFt31czE=
+github.com/dianelooney/directive v0.0.0-20190729013838-5483b5d5c2c9 h1:MVN4JhHOu3mEUy+oGVc8vBIGabOKqKVNskULU97JtMA=
+github.com/dianelooney/directive v0.0.0-20190729013838-5483b5d5c2c9/go.mod h1:L5DJmbnDYn2a02Zs+IpVG28z/NzWi1SWxQoCFt31czE=
 github.com/dianelooney/ferry v0.0.0-20190708165058-49a9fceeeea4 h1:zDqjP46BWY3aH+7fgn7ABYLaauoolUbOMckTzJRrU5I=
 github.com/dianelooney/ferry v0.0.0-20190708165058-49a9fceeeea4/go.mod h1:R093McRgAFPltvCevePzBL5UW1pRN5/ufJNtciZr2O4=
 github.com/dianelooney/ferry v0.0.0-20190709010308-21159dbe8960 h1:BJr4WYUb8Ocb5OIwlufnIsD3FAlTJKpRGGge/K9dPUo=

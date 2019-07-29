@@ -75,7 +75,7 @@ func (d Descriptor) Generate() (snd common.Sound) {
 
 	snd.Waveform = make([]float64, sampleCount)
 	for i, f := range store {
-		snd.Waveform[i] = f[0]
+		snd.Waveform[i] = f[0] / 10
 	}
 
 	return
