@@ -41,8 +41,8 @@ func (p *Pipe) Pre(s string) {
 func (p *Pipe) Wave(s string) {
 	g, ok := waves.Generators[s]
 	if !ok {
-		fmt.Printf("Unable to find generator '%s'\n", s)
-		return
+		fmt.Printf("Unable to find generator '%s', defaulted to sin\n", s)
+		g = waves.Generators["sin"]
 	}
 	p.Pipeline.Generator = g
 }
