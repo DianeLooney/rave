@@ -162,8 +162,8 @@ func (f FadeIn) Init(d Descriptor) PostFilter {
 
 // Apply applies the filter
 func (f FadeIn) Apply(a1 Amplitude, t1 Time) (a2 Amplitude, t2 Time) {
-	if t1 < Time(f.Over) {
-		return Amplitude(float64(a1) * float64(t1) / f.Over), t1
+	if t1 < Time(f.Over/100) {
+		return Amplitude(float64(a1) * float64(t1) / (f.Over / 100)), t1
 	}
 	return a1, t1
 }
@@ -176,7 +176,7 @@ type FadeOut struct {
 
 // Init initializes the filter
 func (f FadeOut) Init(d Descriptor) PostFilter {
-	f.startAt = d.Duration - Time(f.Over)
+	f.startAt = d.Duration - Time(f.Over/100)
 	return f
 }
 
@@ -185,7 +185,7 @@ func (f FadeOut) Apply(a1 Amplitude, t1 Time) (a2 Amplitude, t2 Time) {
 	if t1 < f.startAt {
 		return a1, t2
 	}
-	fac := (f.startAt + Time(f.Over) - t1) / Time(f.Over)
+	fac := (f.startAt + Time(f.Over/100) - t1) / Time(f.Over/100)
 	return Amplitude(float64(fac) * float64(a1)), t1
 }
 
