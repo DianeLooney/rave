@@ -3,71 +3,110 @@ TimeBot 8
 Tempo   150
 Kit     {
         Name    "x"
-        Volume  0.2
+        Volume  0.00
         [Sample "808s_1" "snares_1"]
         Loop    {
                 Measure {
-                        [Weight `1 * 4`]
-                        [Sample `0 * 4`]
+                        [Weight `1 + 0 0 0 0`]
+                        [Sample `0 + 0 0 0 0`]
                         [Pulse  `0 % 2 0 8`]
 
-                  [Weight `0.5 * 8`]
-                  [Sample `1 * 8`]
+                  [Weight `0.5 + 0 0 0 0 0 0 0 0`]
+                  [Sample `1 + 0 0 0 0 0 0 0 0`]
                   [Pulse  `2/3 4/3 % 2 0 8`]
             }
       }
+}
+Wave {
+        Name "bass"
+        BaseFreq 110
+        Pipe {
+                Wave "sin"
+                FadeIn { Over 0.1};
+                FadeOut { Over 0.1};
+        }
+        Chord "minor"
+        Loop {
+                Measure {
+                        [Note `0 * 4`]
+                        [Len `0.3 * 4`]
+                        [Pulse `0 2 4 6`]
+                }
+        }
+}
+Wave {
+        Name "bass2"
+        BaseFreq 110
+        Pipe {
+                Vibrato { Hz  3  R  0.02 };
+                Wave "sin"
+                FadeIn { Over 1};
+                FadeOut { Over 1};
+        }
+        Chord "minor"
+        Loop {
+                Measure {
+                        Size 4
+                        [Note   `0 -1 0 -2`]
+                        [Len    `8 8 8 8`]
+                        [Pulse  `0 8 16 24`]
+                }
+        }
+}
+Wave {
+        Name "a"
+        BaseFreq 220
+        Pipe {
+                Wave "sin"
+                ScaleAmplitude { R 0.3 };
+        }
+        Chord "minor"
+        Loop {
+                Measure {
+                        Size 2
+                        [Note   `1 3 5 + 0 1`]
+                        [Len    `1 1 2 * 2`]
+                        [Pulse  `4 6 8 + 0 8`]
+                }
+        }
 }
 Wave  {
       Name     "d"
       BaseFreq 440
       Pipe     {
-               Vibrato        { Hz  3  R  0.02 };
+               Vibrato        { Hz  3  R  0.01 };
                Wave           "triangle"
-               ScaleAmplitude { R    0.04 };
-               FadeIn         { Over 0.02 };
-               FadeOut        { Over 0.01 };
-      }
-      Chord "minor"
-      Loop  {
-            Measure {
-                    [Note  0     2     4     6]
-                    [Len   6     5     4     3]
-                    [Pulse 0     1     2     3]
-            }
-            Measure {
-                    [Note  -1    1     3     4]
-                    [Len   6     5     4     3]
-                    [Pulse 0     1     2     3]
-            }
-            Measure {
-                    [Note  -3    -1    1     2]
-                    [Len   6     5     4     3]
-                    [Pulse 0     1     2     3]
-            }
-            Measure {
-                    [Note  -2    0     2     3]
-                    [Len   6     5     4     3]
-                    [Pulse 0     1     2     3]
-            }
-      }
-}
-Wave  {
-      Name     "e"
-      BaseFreq 440
-      Pipe     {
-               Vibrato        { Hz  8  R  0.02 };
-               Wave           "sin"
-               ScaleAmplitude { R    0.1 };
-               FadeIn         { Over 0.02 };
+               ScaleAmplitude { R    0.00 };
+               FadeIn         { Over 0.04 };
                FadeOut        { Over 0.02 };
       }
       Chord "minor"
       Loop  {
             Measure {
                     Size 4
-                    [Note  `0     2     5     0     2     5     3     1 - 0 1 2 1`]
-                    [Len   `0.3   0.3   1     0.3   0.3   0.2   0.2   2 * 4`]
-                    [Pulse `0     0.5   1     2     2.5   3     4     5 + 0 8 16 24 `]
+                    [Note  `0     2     4     6 - 0 2 4 3`]
+                    [Len   `6     5     4     3 * 4`]
+                    [Pulse `0     1     2     3 + 0 8 16 24`]
+            }
+      }
+}
+Wave  {
+      Name     "e"
+      BaseFreq 880
+      Pipe     {
+               Wave           "saw"
+               ScaleAmplitude { R    0.0 };
+               FadeIn         { Over 0.02 };
+               FadeOut        { Over 0.01 };
+      }
+      Sync "d"
+      Chord "minor"
+      Loop  {
+            Measure {
+                    Size 4
+                    [Note  `0   1       6       5       2       4       3       1   + 0 -2 -1 -3`]
+                    [Len   `0.3 0.3     1       0.3     0.3     0.5       0.5   1.5 * 4`]
+                    [Pulse `0   0.5     2       3       3.5     4       5       6 + 0 8 16 24`]
             }
       }
 }
