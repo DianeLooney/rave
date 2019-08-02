@@ -7,11 +7,11 @@ import (
 	"strings"
 )
 
-type Chord []float64
+type Scale []float64
 
 var HalfStep = math.Pow(2, 1.0/12)
 
-func (c Chord) Multiplier(s string) float64 {
+func (c Scale) Multiplier(s string) float64 {
 	var sharpness float64
 	for {
 		if strings.HasSuffix(s, "#") {

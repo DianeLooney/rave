@@ -34,6 +34,19 @@ type Pipeline struct {
 	PostFilters []PostFilter
 }
 
+func (p Pipeline) Chordify(f float64) Pipeline {
+	return Pipeline{
+		PreFilters: append(
+			p.PreFilters,
+		),
+		Generator: p.Generator,
+		PostFilters: append(
+			p.PostFilters,
+			ScaleAmplitude{R: 1 / f},
+		),
+	}
+}
+
 func pair(i int, freq float64) [2]float64 {
 	x := float64(i) / float64(*common.SampleRate)
 	return [2]float64{x * freq, x}
@@ -125,21 +138,27 @@ func Experiment2(p Pulse) (a Amplitude) {
 	return p1 + p2 + p3
 }
 
-/*
-p1 := Triangle.Mult(Square).Expand(0.5).Amplitude(0.01)
-p2 := Sin.Shrink(2).Amplitude(0.1)
-p3 := Square.Shrink(12).Amplitude(0.07)
-Experiment = p1.Add(p2).Add(p3)
-*/
 // Generators includes the built-in generator functions
 var Generators = map[string]Generator{
-	"organ":       Organ,
-	"sin":         Sin,
-	"square":      Square,
-	"triangle":    Triangle,
-	"saw":         Saw,
-	"experiment1": Experiment1,
-	"experiment2": Experiment2,
+	"organ":    Organ,
+	"sin":      Sin,
+	"square":   Square,
+	"triangle": Triangle,
+	"saw":      Saw,
+	"exp1":     Experiment1,
+	"exp2":     Experiment2,
+}
+
+type PitchUp struct {
+	R float64
+}
+
+func (f PitchUp) Init(d Descriptor) PreFilter {
+	return f
+}
+
+func (f PitchUp) Apply(c1 Pulse, t1 Time) (c2 Pulse, t2 Time) {
+	return (c1 * Pulse(f.R)), t1
 }
 
 type Vibrato struct {

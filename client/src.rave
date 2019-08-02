@@ -1,22 +1,38 @@
-TimeTop 8
+TimeTop 6
 TimeBot 8
 Tempo   150
 
-Wave {
-        Name "bass2"
-        BaseFreq 440
-        Pipe {
-                Vibrato { Hz  3  R  0.005 };
-                Wave "experiment2"
-                FadeIn { Over 3 };
-                FadeOut { Over 3 };
-        }
-        Chord "minor"
+Kit {
+        Name "a"
+        [Sample "808s_1"]
         Loop {
                 Measure {
-                        [Note   `0 % 1 0 8`]
-                        [Len    `0.6 * 8`]
-                        [Pulse  `0 % 1 0 8`]
+                        [Sample 0 0]
+                        [Pulse  0 3]
+                }
+        }
+}
+Wave {
+        Name "bass2"
+        BaseFreq 220
+        Pipe {
+                Vibrato { Hz  3  R  0.01 };
+                Wave "exp1"
+                FadeIn { Over 0.1 };
+                FadeOut { Over 2 };
+        }
+        [Chord `3/2 4/3`]
+        Scale "major"
+        Loop {
+                Measure {
+                        [Note   0   2   3]
+                        [Len    0.3 0.3 4]
+                        [Pulse  0   1   2]
+                }
+                Measure {
+                        [Note   1   -1   -2]
+                        [Len    0.3 0.3 4]
+                        [Pulse  0   1   3]
                 }
         }
 }

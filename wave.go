@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/dianelooney/rave/common"
 	"github.com/dianelooney/rave/music"
 	"github.com/dianelooney/rave/waves"
 )
@@ -13,10 +14,15 @@ type Wave struct {
 	Sync     string
 	BaseFreq float64
 	Pattern  string
-	chord    music.Chord
+	chord    []float64
+	scale    music.Scale
 	loops    []*WaveLoop
 	done     chan bool
 	pipe     *Pipe
+}
+
+func (w *Wave) Chord(f float64) {
+	w.chord = append(w.chord, f)
 }
 
 func (w *Wave) Pipe() *Pipe {
@@ -45,6 +51,12 @@ func (p *Pipe) Wave(s string) {
 		g = waves.Generators["sin"]
 	}
 	p.Pipeline.Generator = g
+}
+
+func (p *Pipe) PitchUp() *waves.PitchUp {
+	b := &waves.PitchUp{}
+	p.Pipeline.PreFilters = append(p.Pipeline.PreFilters, b)
+	return b
 }
 
 func (p *Pipe) Vibrato() *waves.Vibrato {
@@ -106,17 +118,17 @@ func (w *Wave) Harmonic(f float64) {
 }
 */
 
-var predefinedChords = map[string]music.Chord{
+var predefinedScales = map[string]music.Scale{
 	"major": {0, 2, 4, 5, 7, 9, 11},
 	"minor": {0, 2, 3, 5, 7, 8, 10},
 }
 
-func (w *Wave) Chord(s string) {
-	c, ok := predefinedChords[s]
+func (w *Wave) Scale(s string) {
+	c, ok := predefinedScales[s]
 	if !ok {
 		return
 	}
-	w.chord = c
+	w.scale = c
 }
 
 func (w *Wave) PlayLoop(ctx *Context) {
@@ -148,19 +160,31 @@ func (w *Wave) PlayLoop(ctx *Context) {
 						}
 						var freq = w.BaseFreq
 						if i < len(m.Notes) {
-							m := w.chord.Multiplier(m.Notes[i])
+							m := w.scale.Multiplier(m.Notes[i])
 							freq *= m
 						}
 						t := waves.Time(length * (60 / ctx.doc.Tempo))
-						desc := waves.Descriptor{
-							Pipeline:  w.pipe.Pipeline,
+
+						var snds []common.Sound
+						snds = append(snds, waves.Descriptor{
+							Pipeline:  w.pipe.Pipeline.Chordify(1),
 							Frequency: freq,
 							Duration:  t,
+						}.Generate())
+						for _, c := range w.chord {
+							snds = append(snds, waves.Descriptor{
+								Pipeline:  w.pipe.Pipeline.Chordify(c),
+								Frequency: freq * c,
+								Duration:  t,
+							}.Generate())
 						}
-						snd := desc.Generate()
 
 						waitForBeat(mStart, ctx.doc.Tempo, pulse)
-						snd.Play()
+						for _, snd := range snds {
+							go func(snd common.Sound) {
+								snd.Play()
+							}(snd)
+						}
 					}(m, i, pulse)
 				}
 
