@@ -10,6 +10,7 @@ import (
 type Context struct {
 	mtx            sync.Mutex
 	globalBeat     *ferry.Value
+	globalTick     *ferry.Value
 	globalBeatOnce sync.Once
 	doc            *Doc
 	insts          map[string]Inst
@@ -45,21 +46,36 @@ func (p *Context) Load(doc *Doc) {
 	for _, i := range p.doc.Insts {
 		go p.spawnInst(i)
 	}
-	go p.globalBeatOnce.Do(p.spawnGlobalBeat)
+
+	t := time.Now()
+	p.globalBeatOnce.Do(func() {
+		p.globalBeat = ferry.NewValue()
+		p.globalTick = ferry.NewValue()
+		go p.spawnGlobalBeat(t)
+		go p.spawnGlobalTick(t)
+	})
 }
 
-func (p *Context) spawnGlobalBeat() {
-	p.globalBeat = ferry.NewValue()
-
-	time.Sleep(250 * time.Millisecond)
-	next := time.Now()
+func (p *Context) spawnGlobalBeat(t time.Time) {
+	next := t
 	for {
-		p.globalBeat.Done(next)
-
 		seconds := (60 / float64(p.doc.Tempo)) * p.doc.TimeTop
 		elapsed := time.Duration(float64(time.Second) * seconds)
 		next = next.Add(elapsed)
 		<-time.After(time.Until(next))
+		p.globalBeat.Done(next)
+
+	}
+}
+
+func (p *Context) spawnGlobalTick(t time.Time) {
+	next := t
+	for {
+		seconds := (60 / float64(p.doc.Tempo)) * p.doc.TimeTop
+		elapsed := time.Duration(float64(time.Second) * seconds)
+		next = next.Add(elapsed)
+		<-time.After(time.Until(next))
+		p.globalTick.Done(next)
 	}
 }
 

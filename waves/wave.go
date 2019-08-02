@@ -84,32 +84,62 @@ func (d Descriptor) Generate() (snd common.Sound) {
 var PreFilters = map[string]PreFilter{}
 var PostFilters = map[string]PostFilter{}
 
+func Sin(p Pulse) (a Amplitude) {
+	return Amplitude(math.Sin(2 * math.Pi * float64(p)))
+}
+func Square(p Pulse) (a Amplitude) {
+	if int(2*p)%2 == 0 {
+		a = 1
+	} else {
+		a = -1
+	}
+	return a
+}
+func Triangle(p Pulse) (a Amplitude) {
+	iPart := math.Floor(float64(p))
+	remainder := float64(p) - iPart
+	if remainder < 0.5 {
+		return Amplitude(1 - 2*remainder)
+	}
+	return Amplitude(-2 + 2*remainder)
+}
+func Saw(p Pulse) (a Amplitude) {
+	iPart := math.Floor(float64(p))
+	remainder := float64(p) - iPart
+	return Amplitude(-1 + 2*remainder)
+}
+func Experiment1(p Pulse) (a Amplitude) {
+	p1 := Saw(p*2) * 0.2
+	p2 := Sin(p) * 0.7
+	p3 := Square(p*3) * 0.1
+
+	return p1 + p2 + p3
+}
+func Organ(p Pulse) (a Amplitude) {
+	return Sin(p) * ((Sin(3*p)+Sin(5*p)+Sin(7*p))*0.3 - 0.6) * 0.6
+}
+func Experiment2(p Pulse) (a Amplitude) {
+	p1 := Triangle(p) * Square(p) * 0.3
+	p2 := Sin(p/4) * 0.2
+	p3 := Square(p) * 0.5
+	return p1 + p2 + p3
+}
+
+/*
+p1 := Triangle.Mult(Square).Expand(0.5).Amplitude(0.01)
+p2 := Sin.Shrink(2).Amplitude(0.1)
+p3 := Square.Shrink(12).Amplitude(0.07)
+Experiment = p1.Add(p2).Add(p3)
+*/
 // Generators includes the built-in generator functions
 var Generators = map[string]Generator{
-	"sin": func(p Pulse) (a Amplitude) {
-		return Amplitude(math.Sin(2 * math.Pi * float64(p)))
-	},
-	"square": func(p Pulse) (a Amplitude) {
-		if int(2*p)%2 == 0 {
-			a = 1
-		} else {
-			a = -1
-		}
-		return a
-	},
-	"triangle": func(p Pulse) (a Amplitude) {
-		iPart := math.Floor(float64(p))
-		remainder := float64(p) - iPart
-		if remainder < 0.5 {
-			return Amplitude(1 - 2*remainder)
-		}
-		return Amplitude(-2 + 2*remainder)
-	},
-	"saw": func(p Pulse) (a Amplitude) {
-		iPart := math.Floor(float64(p))
-		remainder := float64(p) - iPart
-		return Amplitude(-1 + 2*remainder)
-	},
+	"organ":       Organ,
+	"sin":         Sin,
+	"square":      Square,
+	"triangle":    Triangle,
+	"saw":         Saw,
+	"experiment1": Experiment1,
+	"experiment2": Experiment2,
 }
 
 type Vibrato struct {

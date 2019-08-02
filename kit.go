@@ -11,8 +11,10 @@ type Kit struct {
 	Samples []string
 	Sync    string
 	Volume  float64
-	loop    *KitLoop
-	done    chan bool
+	Poly    int
+
+	loop *KitLoop
+	done chan bool
 }
 
 func (k *Kit) ID() string {
@@ -38,8 +40,43 @@ func (k *Kit) Loop() *KitLoop {
 
 	return k.loop
 }
+func (k *Kit) playPolyLoop(ctx *Context) {
+	samples := make([]common.Sound, len(k.Samples))
+	for i, s := range k.Samples {
+		x := kit.Sample(s)
+		samples[i] = x.ScaleAmplitude(k.Volume)
+	}
+	m := k.loop.Measures[0]
+	mStart := ctx.globalTick.Wait().(time.Time)
+	for i, pulse := range m.Pulses {
+		go func(m *KitMeasure, i int, pulse float64) {
+			sampleI := 0
+			if i < len(m.Samples) {
+				sampleI = m.Samples[i]
+			}
+			x := samples[0]
+			if sampleI < len(samples) {
+				x = samples[sampleI]
+			}
 
+			if i < len(m.Weights) {
+				x = x.ScaleAmplitude(m.Weights[i])
+			}
+			waitForBeat(mStart, ctx.doc.Tempo, pulse)
+			x.Play()
+		}(m, i, pulse)
+	}
+
+	for i := 1; i < int(m.Size); i++ {
+		ctx.globalTick.Wait()
+	}
+}
 func (k *Kit) PlayLoop(ctx *Context) {
+	if k.Poly != 0 {
+		k.playPolyLoop(ctx)
+		return
+	}
+
 	samples := make([]common.Sound, len(k.Samples))
 	for i, s := range k.Samples {
 		x := kit.Sample(s)

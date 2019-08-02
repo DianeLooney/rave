@@ -1,75 +1,22 @@
 TimeTop 8
 TimeBot 8
 Tempo   150
-Kit     {
-        Name    "x"
-        Volume  0.00
-        [Sample "808s_1" "snares_1"]
-        Loop    {
-                Measure {
-                        [Weight `1 + 0 0 0 0`]
-                        [Sample `0 + 0 0 0 0`]
-                        [Pulse  `0 % 2 0 8`]
 
-                  [Weight `0.5 + 0 0 0 0 0 0 0 0`]
-                  [Sample `1 + 0 0 0 0 0 0 0 0`]
-                  [Pulse  `2/3 4/3 % 2 0 8`]
-            }
-      }
-}
-Wave {
-        Name "bass"
-        BaseFreq 220
-        Pipe {
-                Wave "sin"
-                FadeIn { Over 0.01 };
-                FadeOut { Over 0.01 };
-        }
-        Chord "minor"
-        Loop {
-                Measure {
-                        [Note `0 * 4`]
-                        [Len `0.3 * 4`]
-                        [Pulse `0 2 4 6`]
-                }
-        }
-}
 Wave {
         Name "bass2"
-        BaseFreq 110
-        Pipe {
-                Vibrato { Hz  3  R  0.02 };
-                Wave "sin"
-                FadeIn { Over 1 };
-                FadeOut { Over 1 };
-        }
-        Chord "minor"
-        Loop {
-                Measure {
-                        Size 4
-                        [Note   `0 -1 0 -2`]
-                        [Len    `8 8 8 8`]
-                        [Pulse  `0 8 16 24`]
-                }
-        }
-}
-Wave {
-        Name "a"
         BaseFreq 440
         Pipe {
-                Wave "sin"
-                FadeIn { Over 0.03 };
-                FadeOut { Over 0.03 };
+                Vibrato { Hz  3  R  0.005 };
+                Wave "experiment2"
+                FadeIn { Over 3 };
+                FadeOut { Over 3 };
         }
         Chord "minor"
         Loop {
                 Measure {
-                        Size 4
-                        [Note   `(4 3 4 1 * 4) + 0 -1 -2`]
-                        [Len    `0.2 * 64`]
-                        [Pulse  `0 % 0.5 0 32`]
-
-                        [Note `0 % 1 -8 8`]
+                        [Note   `0 % 1 0 8`]
+                        [Len    `0.6 * 8`]
+                        [Pulse  `0 % 1 0 8`]
                 }
         }
 }
